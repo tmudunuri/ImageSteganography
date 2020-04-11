@@ -1,10 +1,11 @@
 from flask import Blueprint, render_template
-from flask_login import login_required, current_user
+from flask_login import current_user
 from webapp import db
 
 main = Blueprint('main', __name__)
 
 @main.route('/')
-@login_required
 def index():
-    return render_template('index.html', name=current_user.name)
+    if current_user.is_authenticated:
+        return render_template('dashboard.html', name=current_user.name)
+    return render_template('index.html')

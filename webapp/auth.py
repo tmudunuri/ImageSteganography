@@ -67,7 +67,7 @@ def login_post():
 def logout():
     logout_user()
     flash('You have been successfully logged out.')
-    return redirect(url_for('main.index'))
+    return redirect(url_for('auth.login'))
 
 @auth.route('/delete_user')
 @login_required
@@ -76,7 +76,7 @@ def delete_user():
     db.session.delete(user)
     db.session.commit()
     flash('User ' + current_user.email + ' has been deleted.')
-    return redirect(url_for('main.index'))
+    return redirect(url_for('auth.login'))
 
 # ============================== Images ==============================
 MEDIA_FOLDER = os.path.normcase(os.getcwd() + '/images')
