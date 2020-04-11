@@ -2,52 +2,146 @@
 <html lang="en">
 
 <head>
-  {% include "partials/head.html" %}
-  <title>GAN | Image Steganography</title>
+    {% include "partials/head.html" %}
+    <title>GAN | Image Steganography</title>
 </head>
 
 <body id="page-top">
 
-  <!-- Page Wrapper -->
-  <div id="wrapper">
+    <!-- Page Wrapper -->
+    <div id="wrapper">
 
-    <!-- Sidebar -->
-    {% include "partials/sidebar.html" %}
-    <!-- End of Sidebar -->
+        <!-- Sidebar -->
+        {% include "partials/sidebar.html" %}
+        <!-- End of Sidebar -->
 
-    <!-- Content Wrapper -->
-    <div id="content-wrapper" class="d-flex flex-column">
+        <!-- Content Wrapper -->
+        <div id="content-wrapper" class="d-flex flex-column">
 
-      <!-- Main Content -->
-      <div id="content">
+            <!-- Main Content -->
+            <div id="content">
 
-        <!-- Topbar -->
-        {% include "partials/topbar.html" %}
-        <!-- End of Topbar -->
+                <!-- Topbar -->
+                {% include "partials/topbar.html" %}
+                <!-- End of Topbar -->
 
-        <!-- Begin Page Content -->
-        <div class="container-fluid">
+                <!-- Begin Page Content -->
+                <div class="container-fluid">
 
-          <!-- Page Heading -->
-          <h1 class="h3 mb-4 text-gray-800">Generative Adversarial Nets</h1>
+                    <!-- Page Heading -->
+                    <h1 class="h3 mb-4 text-gray-800">Generative Adversarial Networks</h1>
+
+                    {% if image_file %}
+                    <div class="row">
+                        {% if not decode_message %}
+                        <div class="col-lg-6">
+                            <div class="card shadow mb-4">
+                                <div class="card-header py-3">
+                                    <h6 class="m-0 font-weight-bold text-primary">Input</h6>
+                                </div>
+                                <img src="{{ url_for('auth.download_file', filename='input/' + image_file) }}"
+                                    class="card-img-top" alt="...">
+                                <div class="card-body">
+                                    <span class="font-weight-lighter">Secret message: </span>No Message
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        <div class="col-lg-6">
+                            <div class="card shadow mb-4">
+                                <div class="card-header py-3">
+                                    <h6 class="m-0 font-weight-bold text-primary">Output</h6>
+                                </div>
+                                <img src="{{ url_for('auth.download_file', filename='output/' + image_file) }}"
+                                    class="card-img-top" alt="...">
+                                <div class="card-body">
+                                    <span class="font-weight-lighter">Secret message: </span>{% if decode_message %}
+                                    {{ decode_message }} {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                    {% endif %}
+
+                    <div class="row">
+
+                        <div class="col-lg-6">
+
+                            <div class="card shadow mb-4">
+                                <a href="#collapseGANCard" class="d-block card-header py-3" data-toggle="collapse"
+                                    role="button" aria-expanded="true" aria-controls="collapseGANCard">
+                                    <h6 class="m-0 font-weight-bold text-primary">GAN</h6>
+                                </a>
+                                <div class="collapse show" id="collapseGANCard">
+                                    <div class="card-body">
+                                        This card uses Bootstrap's default styling with no utility classes added. Global
+                                        styles are the only things modifying the look and feel of this default card
+                                        example. This card uses Bootstrap's default styling with no utility classes
+                                        added. Global styles are the only things modifying the look and feel of this
+                                        default card example.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-6">
+
+                            <div class="card shadow mb-4">
+                                <a href="#collapseRunCard" class="d-block card-header py-3" data-toggle="collapse"
+                                    role="button" aria-expanded="true" aria-controls="collapseRunCard">
+                                    <h6 class="m-0 font-weight-bold text-primary">Run</h6>
+                                </a>
+                                <div class="collapse show" id="collapseRunCard">
+                                    <div class="card-body">
+                                        <form method="POST" action="/gan">
+                                            <div class="form-group">
+                                                <textarea class="form-control" name="secret_message"
+                                                    placeholder="Secret Message" rows="3"></textarea>
+                                            </div>
+                                            <div class="form-group">
+                                                <label>Image</label>
+                                                <input type="file" accept=".png" class="form-control-file"
+                                                    name="image_file" required>
+                                            </div>
+                                            <div class="form-group custom-control custom-switch">
+                                                <input type="checkbox" class="custom-control-input" id="dense" checked>
+                                                <label class="custom-control-label" for="dense">Dense Model</label>
+                                            </div>
+                                            <div class="btn-group d-flex">
+                                                <button type="submit" name="action" value="encode"
+                                                    class="btn btn-warning">Encode
+                                                </button>
+                                                <button type="submit" name="action" value="decode"
+                                                    class="btn btn-info">Decode
+                                                </button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+                <!-- /.container-fluid -->
+
+            </div>
+            <!-- End of Main Content -->
+
+            {% include "partials/footer.html" %}
 
         </div>
-        <!-- /.container-fluid -->
-
-      </div>
-      <!-- End of Main Content -->
-
-      {% include "partials/footer.html" %}
+        <!-- End of Content Wrapper -->
 
     </div>
-    <!-- End of Content Wrapper -->
+    <!-- End of Page Wrapper -->
 
-  </div>
-  <!-- End of Page Wrapper -->
-
-  <!-- Scripts -->
-  {% include "partials/scripts.html" %}
-  <!-- End of Scripts -->
+    <!-- Scripts -->
+    {% include "partials/scripts.html" %}
+    <!-- End of Scripts -->
 </body>
 
 </html>

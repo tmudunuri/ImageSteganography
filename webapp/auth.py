@@ -1,7 +1,8 @@
-from flask import Blueprint, render_template, redirect, url_for, request, flash
+from flask import Blueprint, render_template, redirect, url_for, request, flash, send_from_directory
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import login_user, logout_user, login_required, current_user
 from steganogan import SteganoGAN
+import os
 from webapp.models import User
 from webapp import db
 
@@ -77,16 +78,36 @@ def delete_user():
     flash('User ' + current_user.email + ' has been deleted.')
     return redirect(url_for('main.index'))
 
+# ============================== Images ==============================
+MEDIA_FOLDER = os.path.normcase(os.getcwd() + '/images')
+@auth.route('/images/<path:filename>')
+@login_required
+def download_file(filename):
+    return send_from_directory(MEDIA_FOLDER, filename, as_attachment=True)
 
 # ============================== Algorithms ==============================
 @auth.route('/gan')
 @login_required
 def gan():
-    return render_template('algorithms/gan.html')
+    return render_template('algorithms/gan.html', name=current_user.name)
 
-@auth.route('/run')
+@auth.route('/gan', methods=['POST'])
 @login_required
-def run_gan():
-    steganogan = SteganoGAN.load('basic')
-    steganogan.encode('images/input.png', 'images/output.png', 'Secret message!')
-    return render_template('algorithms/gan.html')
+def gan_run():
+    secret_message = request.form.get('secret_message')
+    image_file = request.form.get('image_file')
+    dense = 'dense' if request.form.get('dense') else 'basic'
+
+    steganogan = SteganoGAN.load(dense)
+    if request.form.get('action') == 'encode':
+        try:
+            steganogan.encode('images/input/' + image_file, 'images/output/' + image_file, secret_message)
+            return render_template('algorithms/gan.html', name=current_user.name, image_file = image_file)
+        except:
+            return render_template('algorithms/gan.html', name=current_user.name)
+    elif request.form.get('action') == 'decode':
+        try:
+            decode_message = steganogan.decode('images/output/' + image_file)
+        except:
+            decode_message = 'Unable to decode message'
+        return render_template('algorithms/gan.html', name=current_user.name, decode_message = decode_message, image_file = image_file)
