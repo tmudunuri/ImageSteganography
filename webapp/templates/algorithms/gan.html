@@ -25,6 +25,14 @@
                 {% include "partials/topbar.html" %}
                 <!-- End of Topbar -->
 
+                <!-- Loading Spinner -->
+                <div id="loadingSpinner" style="display: none; cursor: wait; margin: 2% 2%;">
+                    <div class="text-center">
+                        <p>Processing...</p>
+                        <div class="spinner-border" role="status"></div>
+                    </div>
+                </div>
+
                 <!-- Begin Page Content -->
                 <div class="container-fluid">
 
@@ -76,11 +84,10 @@
                                 </a>
                                 <div class="collapse show" id="collapseGANCard">
                                     <div class="card-body">
-                                        This card uses Bootstrap's default styling with no utility classes added. Global
-                                        styles are the only things modifying the look and feel of this default card
-                                        example. This card uses Bootstrap's default styling with no utility classes
-                                        added. Global styles are the only things modifying the look and feel of this
-                                        default card example.
+                                        Generative adversarial networks (GANs) are algorithmic architectures that use
+                                        two neural networks, pitting one against the other (thus the “adversarial”) in
+                                        order to generate new, synthetic instances of data that can pass for real data.
+                                        They are used widely in image generation, video generation and voice generation.
                                     </div>
                                 </div>
                             </div>
@@ -111,10 +118,10 @@
                                             </div>
                                             <div class="btn-group d-flex">
                                                 <button type="submit" name="action" value="encode"
-                                                    class="btn btn-warning">Encode
+                                                    class="btn btn-warning" onclick="loadingSpinner();">Encode
                                                 </button>
-                                                <button type="submit" name="action" value="decode"
-                                                    class="btn btn-info">Decode
+                                                <button type="submit" name="action" value="decode" class="btn btn-info"
+                                                    onclick="loadingSpinner();">Decode
                                                 </button>
                                             </div>
                                         </form>
@@ -124,6 +131,7 @@
                         </div>
 
                     </div>
+
 
                 </div>
                 <!-- /.container-fluid -->
@@ -142,6 +150,12 @@
     <!-- Scripts -->
     {% include "partials/scripts.html" %}
     <!-- End of Scripts -->
+    <!-- Loading Script -->
+    <script type="text/javascript">
+        function loadingSpinner() {
+            $("#loadingSpinner").show();
+        }
+    </script>
 </body>
 
 </html>
