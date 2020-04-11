@@ -1,11 +1,13 @@
 from flask import Blueprint, render_template, redirect, url_for, request, flash
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import login_user, logout_user, login_required, current_user
+from steganogan import SteganoGAN
 from webapp.models import User
 from webapp import db
 
 auth = Blueprint('auth', __name__)
 
+# ============================== Authentication ==============================
 @auth.route('/login')
 def login():
     return render_template('login.html')
@@ -74,3 +76,17 @@ def delete_user():
     db.session.commit()
     flash('User ' + current_user.email + ' has been deleted.')
     return redirect(url_for('main.index'))
+
+
+# ============================== Algorithms ==============================
+@auth.route('/gan')
+@login_required
+def gan():
+    return render_template('algorithms/gan.html')
+
+@auth.route('/run')
+@login_required
+def run_gan():
+    steganogan = SteganoGAN.load('basic')
+    steganogan.encode('images/input.png', 'images/output.png', 'Secret message!')
+    return render_template('algorithms/gan.html')
