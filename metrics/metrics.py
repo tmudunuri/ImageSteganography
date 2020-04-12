@@ -4,6 +4,10 @@ import imutils
 import cv2
 import os
 import numpy as np
+# histogram
+import matplotlib.pyplot as plt
+
+WORKING_DIR = os.path.normcase(os.getcwd())
 
 
 def SSIM(imageA, imageB, image_file):
@@ -28,7 +32,7 @@ def SSIM(imageA, imageB, image_file):
         cv2.rectangle(imageA, (x, y), (x + w, y + h), (0, 0, 255), 2)
         cv2.rectangle(imageB, (x, y), (x + w, y + h), (0, 0, 255), 2)
 
-    MEDIA_FOLDER = os.path.normcase(os.getcwd() + '/images/metrics/ssim/')
+    MEDIA_FOLDER = os.path.normcase(WORKING_DIR + '/images/metrics/ssim/')
     # cv2.imwrite(MEDIA_FOLDER + '/ip/' + image_file, imageA)
     cv2.imwrite(MEDIA_FOLDER + '/op/' + image_file, imageB)
     # cv2.imwrite(MEDIA_FOLDER + '/diff/' + image_file, diff)
@@ -40,6 +44,19 @@ def SSIM(imageA, imageB, image_file):
 def MSE(imageA, imageB):
     imageA = cv2.cvtColor(imageA, cv2.COLOR_BGR2GRAY)
     imageB = cv2.cvtColor(imageB, cv2.COLOR_BGR2GRAY)
-    error_value = np.sum((imageA.astype("float") - imageB.astype("float")) ** 2)
-    error_value /= float(imageA.shape[0] * imageA.shape[1])
+    # error_value = np.sum((imageA.astype("float") - imageB.astype("float")) ** 2)
+    # error_value /= float(imageA.shape[0] * imageA.shape[1])
+    error_value = np.square(np.subtract(
+        imageA.astype("float"), imageB.astype("float"))).mean()
     return error_value
+
+
+def histogram(image):
+    gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    histogram = cv2.calcHist([gray_image], [0], None, [256], [0, 256])
+    # Colour 
+    # for i, col in enumerate(['b', 'g', 'r']):
+    #     hist = cv2.calcHist([image], [i], None, [256], [0, 256])
+    # plt.plot(histogram, color='k')
+    # plt.show()
+    return histogram

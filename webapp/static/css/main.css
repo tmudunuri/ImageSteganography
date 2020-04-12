@@ -3,3 +3,7 @@
     background-position: center;
     background-size: cover;
 }
+
+.chart-area {
+    height: 30rem;
+  }

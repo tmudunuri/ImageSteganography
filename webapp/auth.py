@@ -8,7 +8,7 @@ from webapp import db
 from steganogan import SteganoGAN
 # Metrics
 import cv2
-from metrics.metrics import SSIM, MSE
+from metrics.metrics import SSIM, MSE, histogram
 # Misc
 import os
 
@@ -143,4 +143,8 @@ def gan_run():
         args['psnr'] = psnr_val if psnr_val is not None else 'Error'
         args['mse'] = mse_val if mse_val is not None else 'Error'
         args['ssim'] = ssim_val if ssim_val is not None else 'Error'
+        flatten = lambda l: [item for sublist in l for item in sublist]
+        args['histogramCover'] = flatten(histogram(original))
+        args['histogramStego'] = flatten(histogram(compressed))
+        
         return render_template('algorithms/gan.html', **args)
