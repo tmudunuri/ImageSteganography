@@ -86,13 +86,14 @@
                                             </div>
                                             <div class="row no-gutters align-items-center">
                                                 <div class="col-auto">
-                                                    <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">{{ psnr_value }} dB</div>
+                                                    <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">{{ psnr }}
+                                                        dB</div>
                                                 </div>
                                                 <div class="col">
                                                     <div class="progress progress-sm mr-2">
                                                         <div class="progress-bar bg-info" role="progressbar"
-                                                            style="width: {{ psnr_value }}%" aria-valuenow="{{ psnr_value }}" aria-valuemin="0"
-                                                            aria-valuemax="100"></div>
+                                                            style="width: {{ psnr }}%" aria-valuenow="{{ psnr }}"
+                                                            aria-valuemin="0" aria-valuemax="100"></div>
                                                     </div>
                                                 </div>
                                             </div>
@@ -105,6 +106,72 @@
                             </div>
                         </div>
                         <!-- End PSNR -->
+
+
+                        <!-- MSE -->
+                        <div class="col-xl-3 col-md-6 mb-4">
+                            <div class="card border-left-info shadow h-100 py-2">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="font-weight-bold text-info text-uppercase mb-1">MSE
+                                            </div>
+                                            <div class="row no-gutters align-items-center">
+                                                <div class="col-auto">
+                                                    <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">{{ mse }}
+                                                    </div>
+                                                </div>
+                                                <div class="col">
+                                                    <div class="progress progress-sm mr-2">
+                                                        <div class="progress-bar bg-info" role="progressbar"
+                                                            style="width: {{ mse * 100 }}%" aria-valuenow="{{ mse }}"
+                                                            aria-valuemin="0" aria-valuemax="1"></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-auto">
+                                            <i class="fas fa-clipboard-list fa-2x text-gray-300"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- End MSE -->
+
+
+                        <!-- SSIM -->
+                        <div class="col-xl-3 col-md-6 mb-4">
+                            <div class="card border-left-info shadow h-100 py-2">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="font-weight-bold text-info text-uppercase mb-1">SSIM
+                                            </div>
+                                            <div class="row no-gutters align-items-center">
+                                                <div class="col-auto">
+                                                    <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">{{ ssim }}
+                                                    </div>
+                                                </div>
+                                                <div class="col">
+                                                    <div class="progress progress-sm mr-2">
+                                                        <div class="progress-bar bg-info" role="progressbar"
+                                                            style="width: {{ ssim * 100 }}%" aria-valuenow="{{ ssim }}"
+                                                            aria-valuemin="0" aria-valuemax="1"></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-auto">
+                                            <i class="fas fa-clipboard-list fa-2x text-gray-300"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- End SSIM -->
+
+
                     </div>
                     <!-- End Stats -->
                     {% endif %}
@@ -149,7 +216,8 @@
                                                     name="image_file" required>
                                             </div>
                                             <div class="form-group custom-control custom-switch">
-                                                <input type="checkbox" class="custom-control-input" name = "model" id="model" value="dense" checked>
+                                                <input type="checkbox" class="custom-control-input" name="model"
+                                                    id="model" value="dense" checked>
                                                 <label class="custom-control-label" for="model">Dense Model</label>
                                             </div>
                                             <div class="btn-group d-flex">
@@ -159,8 +227,8 @@
                                                 <button type="submit" name="action" value="decode" class="btn btn-dark"
                                                     onclick="loadingSpinner();">Decode
                                                 </button>
-                                                <button type="submit" name="action" value="calculate" class="btn btn-info"
-                                                    onclick="loadingSpinner();">Calculate
+                                                <button type="submit" name="action" value="calculate"
+                                                    class="btn btn-info" onclick="loadingSpinner();">Calculate
                                                 </button>
                                             </div>
                                         </form>

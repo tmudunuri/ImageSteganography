@@ -8,6 +8,7 @@ from webapp import db
 from steganogan import SteganoGAN
 # Metrics
 import cv2
+from metrics.metrics import SSIM, MSE
 # Misc
 import os
 
@@ -117,6 +118,10 @@ def gan_run():
     output_file = os.path.normcase(MEDIA_FOLDER + 'output/' + image_file)
 
     steganogan = SteganoGAN.load(model)
+
+    args = {}
+    args['name'] = current_user.name
+    args['image_file'] = image_file
     if request.form.get('action') == 'encode':
         try:
             steganogan.encode(input_file, output_file, secret_message)
@@ -130,10 +135,12 @@ def gan_run():
             decode_message = 'ERROR : Unable to decode message'
         return render_template('algorithms/gan.html', name=current_user.name, decode_message=decode_message, image_file=image_file)
     elif request.form.get('action') == 'calculate':
-        try:
-            original = cv2.imread(input_file)
-            compressed = cv2.imread(output_file, 1)
-            psnr_value = round(cv2.PSNR(original, compressed),2)
-        except:
-            psnr_value = 'Error'
-        return render_template('algorithms/gan.html', name=current_user.name, psnr_value=psnr_value, image_file=image_file)
+        original = cv2.imread(input_file)
+        compressed = cv2.imread(output_file)
+        psnr_val = round(cv2.PSNR(original, compressed), 2)
+        ssim_val = round(SSIM(original, compressed, image_file), 2)
+        mse_val = round(MSE(original, compressed), 2)
+        args['psnr'] = psnr_val if psnr_val is not None else 'Error'
+        args['mse'] = mse_val if mse_val is not None else 'Error'
+        args['ssim'] = ssim_val if ssim_val is not None else 'Error'
+        return render_template('algorithms/gan.html', **args)
