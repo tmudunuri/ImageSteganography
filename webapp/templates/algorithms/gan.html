@@ -40,6 +40,7 @@
                     <h1 class="h3 mb-4 text-gray-800">Generative Adversarial Networks</h1>
 
                     {% if image_file %}
+                    <!-- Images -->
                     <div class="row">
                         {% if not decode_message %}
                         <div class="col-lg-6">
@@ -71,6 +72,41 @@
                         </div>
 
                     </div>
+                    <!-- End Images -->
+
+                    <!-- Stats -->
+                    <div class="row">
+                        <!-- PSNR -->
+                        <div class="col-xl-3 col-md-6 mb-4">
+                            <div class="card border-left-info shadow h-100 py-2">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="font-weight-bold text-info text-uppercase mb-1">PSNR
+                                            </div>
+                                            <div class="row no-gutters align-items-center">
+                                                <div class="col-auto">
+                                                    <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">{{ psnr_value }} dB</div>
+                                                </div>
+                                                <div class="col">
+                                                    <div class="progress progress-sm mr-2">
+                                                        <div class="progress-bar bg-info" role="progressbar"
+                                                            style="width: {{ psnr_value }}%" aria-valuenow="{{ psnr_value }}" aria-valuemin="0"
+                                                            aria-valuemax="100"></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-auto">
+                                            <i class="fas fa-clipboard-list fa-2x text-gray-300"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- End PSNR -->
+                    </div>
+                    <!-- End Stats -->
                     {% endif %}
 
                     <div class="row">
@@ -113,8 +149,8 @@
                                                     name="image_file" required>
                                             </div>
                                             <div class="form-group custom-control custom-switch">
-                                                <input type="checkbox" class="custom-control-input" id="dense" checked>
-                                                <label class="custom-control-label" for="dense">Dense Model</label>
+                                                <input type="checkbox" class="custom-control-input" name = "model" id="model" value="dense" checked>
+                                                <label class="custom-control-label" for="model">Dense Model</label>
                                             </div>
                                             <div class="btn-group d-flex">
                                                 <button type="submit" name="action" value="encode"
@@ -122,6 +158,9 @@
                                                 </button>
                                                 <button type="submit" name="action" value="decode" class="btn btn-dark"
                                                     onclick="loadingSpinner();">Decode
+                                                </button>
+                                                <button type="submit" name="action" value="calculate" class="btn btn-info"
+                                                    onclick="loadingSpinner();">Calculate
                                                 </button>
                                             </div>
                                         </form>
@@ -150,12 +189,6 @@
     <!-- Scripts -->
     {% include "partials/scripts.html" %}
     <!-- End of Scripts -->
-    <!-- Loading Script -->
-    <script type="text/javascript">
-        function loadingSpinner() {
-            $("#loadingSpinner").show();
-        }
-    </script>
 </body>
 
 </html>
