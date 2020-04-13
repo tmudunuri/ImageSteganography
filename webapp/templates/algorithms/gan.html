@@ -74,6 +74,7 @@
                     </div>
                     <!-- End Images -->
 
+                    {% if psnr %}
                     <!-- Stats -->
                     <div class="row">
                         <!-- PSNR -->
@@ -173,6 +174,7 @@
 
 
                     </div>
+                    {% endif %}
                     <!-- End Stats -->
                     {% endif %}
 
@@ -242,19 +244,17 @@
                     <!-- Charts -->
                     <div class="row">
 
-                        <div class="col-xl-8 col-lg-7">
+                        <div class="col-xl-12 col-lg-12">
 
-                            <!-- Area Chart -->
+                            <!-- Histogram -->
                             <div class="card shadow mb-4">
                                 <div class="card-header py-3">
-                                    <h6 class="m-0 font-weight-bold text-primary">Area Chart</h6>
+                                    <h6 class="m-0 font-weight-bold text-primary">Histogram</h6>
                                 </div>
                                 <div class="card-body">
                                     <div class="chart-area">
                                         <canvas id="histogramCover"></canvas>
                                     </div>
-                                    <hr>
-                                    Histogram of Cover Image
                                 </div>
                             </div>
 
@@ -262,7 +262,7 @@
 
                     </div>
                     <!-- End Charts -->
-                    
+
                 </div>
                 <!-- /.container-fluid -->
 
@@ -291,53 +291,41 @@
                 labels: [{% for i in range(256) %}
                             {{ i }},
                         {% endfor %}],
-                datasets: [{
-                    label: "Cover",
-                    fill: true,
-                    lineTension: 0.5,
-                    backgroundColor: "rgba(0, 97, 242, 0.7",
-                    borderColor: "rgba(0, 97, 242, 0.7",
-                    pointRadius: 0,
-                    pointHoverRadius: 0,
-                    pointHoverBackgroundColor: "rgba(0, 97, 242, 0.9",
-                    pointHoverBorderColor: "rgba(0, 97, 242, 0.9",
-                    pointHitRadius: 2,
-                    pointBorderWidth: 2,
-                    data: [{% for item in histogramCover %}
-                            {{ item }},
-                            {% endfor %}],
-                }, {
+                datasets: [
+                {
                     label: "Stego",
                     fill: true,
-                    lineTension: 0.3,
                     backgroundColor: "rgba(232, 21, 0, 0.7)",
                     borderColor: "rgba(232, 21, 0, 0.7)",
-                    pointRadius: 1,
+                    borderWidth: 1,
+                    pointRadius: 0,
                     pointBackgroundColor: "rgba(232, 21, 0, 0.9)",
                     pointBorderColor: "rgba(232, 21, 0, 0.9)",
-                    pointHoverRadius: 3,
+                    pointHoverRadius: 1,
                     pointHoverBackgroundColor: "rgba(232, 21, 0, 0.9)",
                     pointHoverBorderColor: "rgba(232, 21, 0, 0.9)",
-                    pointHitRadius: 10,
-                    pointBorderWidth: 2,
-                    data: [{% for item in histogramStego %}
-                            {{ item }},
+                    pointHitRadius: 1,
+                    pointBorderWidth: 0,
+                    data: [{% for itemB in histogramStego %}
+                            {{ itemB }},
                           {% endfor %}],
-                }, {
-                    label: "Difference",
+                },
+                {
+                    label: "Cover",
                     fill: true,
-                    lineTension: 0.3,
-                    backgroundColor: "rgba(244, 161, 0, 0.7)",
-                    borderColor: "rgba(244, 161, 0, 0.7)",
-                    pointRadius: 1,
-                    pointBackgroundColor: "rgba(244, 161, 0, 0.9)",
-                    pointBorderColor: "rgba(244, 161, 0, 0.9)",
-                    pointHoverRadius: 3,
-                    pointHoverBackgroundColor: "rgba(244, 161, 0, 0.9)",
-                    pointHoverBorderColor: "rgba(244, 161, 0, 0.9)",
-                    pointHitRadius: 10,
-                    pointBorderWidth: 2,
-                    data: [0, 10000, 5000, 15000, 10000, 20000, 15000, 25000, 20000, 30000, 25000, 40000],
+                    backgroundColor: "rgba(0, 97, 242, 0.7",
+                    borderColor: "rgba(0, 97, 242, 0.7",
+                    borderWidth: 1,
+                    pointRadius: 0,
+                    pointHoverRadius: 1,
+                    pointHoverBackgroundColor: "rgba(0, 97, 242, 0.9",
+                    pointHoverBorderColor: "rgba(0, 97, 242, 0.9",
+                    pointHitRadius: 1,
+                    pointBorderWidth: 0,
+                    spanGaps: true,
+                    data: [{% for itemA in histogramCover %}
+                            {{ itemA }},
+                            {% endfor %}],
                 }],
             },
             options: {
@@ -348,7 +336,7 @@
                         left: 10,
                         right: 25,
                         top: 25,
-                        bottom: 0
+                        bottom: 10
                     }
                 },
                 scales: {
@@ -358,12 +346,12 @@
                             drawBorder: false
                         },
                         ticks: {
-                            maxTicksLimit: 6
+                            maxTicksLimit: 12,
                         }
                     }],
                     yAxes: [{
                         ticks: {
-                            maxTicksLimit: 10,
+                            maxTicksLimit: 14,
                         },
                     }],
                 },
@@ -373,7 +361,7 @@
             }
         }
 
-        // Area Chart Example
+        // Histogram
         var ctx = document.getElementById("histogramCover").getContext("2d");
         var myLineChart = new Chart(ctx, config);
     </script>

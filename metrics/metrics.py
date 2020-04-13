@@ -51,12 +51,23 @@ def MSE(imageA, imageB):
     return error_value
 
 
-def histogram(image):
+def Histogram(image):
     gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-    histogram = cv2.calcHist([gray_image], [0], None, [256], [0, 256])
+    hist = cv2.calcHist([gray_image], [0], None, [256], [0, 256])
+    flatten = lambda l: [item for sublist in l for item in sublist]
     # Colour 
     # for i, col in enumerate(['b', 'g', 'r']):
     #     hist = cv2.calcHist([image], [i], None, [256], [0, 256])
-    # plt.plot(histogram, color='k')
+    # plt.plot(hist, color='k')
     # plt.show()
-    return histogram
+    return flatten(hist)
+
+# image = cv2.imread('55.png')
+# gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+# histogram = cv2.calcHist([gray_image], [0], None, [256], [0, 256])
+# flatten = lambda l: [item for sublist in l for item in sublist]
+# print(max(flatten(histogram)))
+# print(len(histogram))
+# print(flatten(histogram))
+# plt.plot(flatten(histogram))
+# plt.show()

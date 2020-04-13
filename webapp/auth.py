@@ -8,7 +8,7 @@ from webapp import db
 from steganogan import SteganoGAN
 # Metrics
 import cv2
-from metrics.metrics import SSIM, MSE, histogram
+from metrics.metrics import SSIM, MSE, Histogram
 # Misc
 import os
 
@@ -125,7 +125,7 @@ def gan_run():
     if request.form.get('action') == 'encode':
         try:
             steganogan.encode(input_file, output_file, secret_message)
-            return render_template('algorithms/gan.html', name=current_user.name, image_file=image_file)
+            return render_template('algorithms/gan.html', **args)
         except:
             return render_template('algorithms/gan.html', name=current_user.name)
     elif request.form.get('action') == 'decode':
@@ -135,16 +135,15 @@ def gan_run():
             decode_message = 'ERROR : Unable to decode message'
         return render_template('algorithms/gan.html', name=current_user.name, decode_message=decode_message, image_file=image_file)
     elif request.form.get('action') == 'calculate':
-        original = cv2.imread(input_file)
-        compressed = cv2.imread(output_file)
-        psnr_val = round(cv2.PSNR(original, compressed), 2)
-        ssim_val = round(SSIM(original, compressed, image_file), 2)
-        mse_val = round(MSE(original, compressed), 2)
+        psnr_val = round(cv2.PSNR(cv2.imread(input_file), cv2.imread(output_file)), 2)
+        ssim_val = round(SSIM(cv2.imread(input_file), cv2.imread(output_file), image_file), 2)
+        mse_val = round(MSE(cv2.imread(input_file), cv2.imread(output_file)), 2)
         args['psnr'] = psnr_val if psnr_val is not None else 'Error'
         args['mse'] = mse_val if mse_val is not None else 'Error'
         args['ssim'] = ssim_val if ssim_val is not None else 'Error'
-        flatten = lambda l: [item for sublist in l for item in sublist]
-        args['histogramCover'] = flatten(histogram(original))
-        args['histogramStego'] = flatten(histogram(compressed))
-        
+
+        original = cv2.imread(input_file)
+        compressed = cv2.imread(output_file)
+        args['histogramCover'] = Histogram(original)
+        args['histogramStego'] = Histogram(compressed)
         return render_template('algorithms/gan.html', **args)
