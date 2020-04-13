@@ -10,35 +10,101 @@
 
     <!-- Page Wrapper -->
     <div id="wrapper">
-
+    
         <!-- Sidebar -->
         {% include "partials/sidebar.html" %}
         <!-- End of Sidebar -->
-
+    
         <!-- Content Wrapper -->
         <div id="content-wrapper" class="d-flex flex-column">
-
+    
             <!-- Main Content -->
             <div id="content">
-
+    
                 <!-- Topbar -->
                 {% include "partials/topbar.html" %}
                 <!-- End of Topbar -->
-
-                <!-- Loading Spinner -->
-                <div id="loadingSpinner" style="display: none; cursor: wait; margin: 2% 2%;">
-                    <div class="text-center">
-                        <p>Processing...</p>
-                        <div class="spinner-border" role="status"></div>
-                    </div>
-                </div>
-
+    
                 <!-- Begin Page Content -->
                 <div class="container-fluid">
-
+    
                     <!-- Page Heading -->
                     <h1 class="h3 mb-4 text-gray-800">Generative Adversarial Networks</h1>
-
+    
+                    <!-- Run -->
+                    <div class="row">
+    
+                        <div class="col-lg-6">
+    
+                            <div class="card shadow mb-4">
+                                <a href="#collapseGANCard" class="d-block card-header py-3" data-toggle="collapse"
+                                    role="button" aria-expanded="true" aria-controls="collapseGANCard">
+                                    <h6 class="m-0 font-weight-bold text-primary">GAN</h6>
+                                </a>
+                                <div class="collapse show" id="collapseGANCard">
+                                    <div class="card-body">
+                                        Generative adversarial networks (GANs) are algorithmic architectures that use
+                                        two neural networks, pitting one against the other (thus the “adversarial”) in
+                                        order to generate new, synthetic instances of data that can pass for real data.
+                                        They are used widely in image generation, video generation and voice generation.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+    
+                        <div class="col-lg-6">
+    
+                            <div class="card shadow mb-4">
+                                <a href="#collapseRunCard" class="d-block card-header py-3" data-toggle="collapse"
+                                    role="button" aria-expanded="true" aria-controls="collapseRunCard">
+                                    <h6 class="m-0 font-weight-bold text-primary">Run</h6>
+                                </a>
+                                <div class="collapse show" id="collapseRunCard">
+                                    <div class="card-body">
+                                        <form method="POST" action="/gan">
+                                            <div class="form-group">
+                                                <textarea class="form-control" name="secret_message"
+                                                    placeholder="Secret Message" rows="3"></textarea>
+                                            </div>
+                                            <div class="form-group">
+                                                <label>Image</label>
+                                                <input type="file" accept=".png" class="form-control-file" name="image_file"
+                                                    required>
+                                            </div>
+                                            <div class="form-group custom-control custom-switch">
+                                                <input type="checkbox" class="custom-control-input" name="model" id="model"
+                                                    value="dense" checked>
+                                                <label class="custom-control-label" for="model">Dense Model</label>
+                                            </div>
+                                            <div class="btn-group d-flex">
+                                                <button type="submit" name="action" value="encode" class="btn btn-primary"
+                                                    onclick="loadingSpinner();">Encode
+                                                </button>
+                                                <button type="submit" name="action" value="decode" class="btn btn-dark"
+                                                    onclick="loadingSpinner();">Decode
+                                                </button>
+                                                <button type="submit" name="action" value="calculate" class="btn btn-info"
+                                                    onclick="loadingSpinner();">Analyze
+                                                </button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+    
+                    </div>
+                    <!-- End Run -->
+    
+                    <!-- Loading Spinner -->
+                    <div id="loadingSpinner" style="display: none; cursor: wait; margin: 2% 2%;">
+                        <div class="text-center">
+                            <p>Processing...</p>
+                            <div class="spinner-border" role="status"></div>
+                        </div>
+                    </div>
+                    <!-- End Loading Spinner -->
+    
                     {% if image_file %}
                     <!-- Images -->
                     <div class="row">
@@ -56,7 +122,7 @@
                             </div>
                         </div>
                         {% endif %}
-
+    
                         <div class="col-lg-6">
                             <div class="card shadow mb-4">
                                 <div class="card-header py-3">
@@ -70,11 +136,12 @@
                                 </div>
                             </div>
                         </div>
-
+    
                     </div>
                     <!-- End Images -->
-
-                    {% if psnr %}
+                    {% endif %}
+    
+                    {% if psnr and ssim %}
                     <!-- Stats -->
                     <div class="row">
                         <!-- PSNR -->
@@ -107,8 +174,8 @@
                             </div>
                         </div>
                         <!-- End PSNR -->
-
-
+    
+    
                         <!-- MSE -->
                         <div class="col-xl-3 col-md-6 mb-4">
                             <div class="card border-left-info shadow h-100 py-2">
@@ -139,8 +206,8 @@
                             </div>
                         </div>
                         <!-- End MSE -->
-
-
+    
+    
                         <!-- SSIM -->
                         <div class="col-xl-3 col-md-6 mb-4">
                             <div class="card border-left-info shadow h-100 py-2">
@@ -171,85 +238,60 @@
                             </div>
                         </div>
                         <!-- End SSIM -->
-
-
+    
+    
                     </div>
-                    {% endif %}
                     <!-- End Stats -->
-                    {% endif %}
 
+                    {% if image_file %}
+                    <!-- Images -->
                     <div class="row">
 
-                        <div class="col-lg-6">
-
+                        <div class="col-lg-4">
                             <div class="card shadow mb-4">
-                                <a href="#collapseGANCard" class="d-block card-header py-3" data-toggle="collapse"
-                                    role="button" aria-expanded="true" aria-controls="collapseGANCard">
-                                    <h6 class="m-0 font-weight-bold text-primary">GAN</h6>
-                                </a>
-                                <div class="collapse show" id="collapseGANCard">
-                                    <div class="card-body">
-                                        Generative adversarial networks (GANs) are algorithmic architectures that use
-                                        two neural networks, pitting one against the other (thus the “adversarial”) in
-                                        order to generate new, synthetic instances of data that can pass for real data.
-                                        They are used widely in image generation, video generation and voice generation.
-                                    </div>
+                                <div class="card-header py-3">
+                                    <h6 class="m-0 text-info">Highlight</h6>
                                 </div>
+                                <img src="{{ url_for('auth.download_file', filename='metrics/ssim/op/' + image_file) }}"
+                                    class="card-img-top" alt="...">
                             </div>
                         </div>
 
-                        <div class="col-lg-6">
-
+                        <div class="col-lg-4">
                             <div class="card shadow mb-4">
-                                <a href="#collapseRunCard" class="d-block card-header py-3" data-toggle="collapse"
-                                    role="button" aria-expanded="true" aria-controls="collapseRunCard">
-                                    <h6 class="m-0 font-weight-bold text-primary">Run</h6>
-                                </a>
-                                <div class="collapse show" id="collapseRunCard">
-                                    <div class="card-body">
-                                        <form method="POST" action="/gan">
-                                            <div class="form-group">
-                                                <textarea class="form-control" name="secret_message"
-                                                    placeholder="Secret Message" rows="3"></textarea>
-                                            </div>
-                                            <div class="form-group">
-                                                <label>Image</label>
-                                                <input type="file" accept=".png" class="form-control-file"
-                                                    name="image_file" required>
-                                            </div>
-                                            <div class="form-group custom-control custom-switch">
-                                                <input type="checkbox" class="custom-control-input" name="model"
-                                                    id="model" value="dense" checked>
-                                                <label class="custom-control-label" for="model">Dense Model</label>
-                                            </div>
-                                            <div class="btn-group d-flex">
-                                                <button type="submit" name="action" value="encode"
-                                                    class="btn btn-primary" onclick="loadingSpinner();">Encode
-                                                </button>
-                                                <button type="submit" name="action" value="decode" class="btn btn-dark"
-                                                    onclick="loadingSpinner();">Decode
-                                                </button>
-                                                <button type="submit" name="action" value="calculate"
-                                                    class="btn btn-info" onclick="loadingSpinner();">Calculate
-                                                </button>
-                                            </div>
-                                        </form>
-                                    </div>
+                                <div class="card-header py-3">
+                                    <h6 class="m-0 text-info">Difference</h6>
                                 </div>
+                                <img src="{{ url_for('auth.download_file', filename='metrics/ssim/diff/' + image_file) }}"
+                                    class="card-img-top" alt="...">
                             </div>
                         </div>
-
+    
+                        <div class="col-lg-4">
+                            <div class="card shadow mb-4">
+                                <div class="card-header py-3">
+                                    <h6 class="m-0 text-info">Bimodal Thresholding</h6>
+                                </div>
+                                <img src="{{ url_for('auth.download_file', filename='metrics/ssim/thresh/' + image_file) }}"
+                                    class="card-img-top" alt="...">
+                            </div>
+                        </div>
+    
                     </div>
-
+                    <!-- End Images -->
+                    {% endif %}
+                    {% endif %}
+    
+                    {% if histogramCover or histogramStego %}
                     <!-- Charts -->
                     <div class="row">
-
-                        <div class="col-xl-12 col-lg-12">
-
+    
+                        <div class="col-lg-12">
+    
                             <!-- Histogram -->
                             <div class="card shadow mb-4">
                                 <div class="card-header py-3">
-                                    <h6 class="m-0 font-weight-bold text-primary">Histogram</h6>
+                                    <h6 class="m-0 font-weight-bold text-info">Histogram</h6>
                                 </div>
                                 <div class="card-body">
                                     <div class="chart-area">
@@ -257,23 +299,24 @@
                                     </div>
                                 </div>
                             </div>
-
+    
                         </div>
-
+    
                     </div>
                     <!-- End Charts -->
-
+                    {% endif %}
+    
                 </div>
                 <!-- /.container-fluid -->
-
+    
             </div>
             <!-- End of Main Content -->
-
+    
             {% include "partials/footer.html" %}
-
+    
         </div>
         <!-- End of Content Wrapper -->
-
+    
     </div>
     <!-- End of Page Wrapper -->
 

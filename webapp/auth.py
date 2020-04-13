@@ -141,7 +141,7 @@ def gan_run():
         args['psnr'] = psnr_val if psnr_val is not None else 'Error'
         args['mse'] = mse_val if mse_val is not None else 'Error'
         args['ssim'] = ssim_val if ssim_val is not None else 'Error'
-
+        # Histogram
         original = cv2.imread(input_file)
         compressed = cv2.imread(output_file)
         args['histogramCover'] = Histogram(original)

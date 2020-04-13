@@ -35,7 +35,7 @@ def SSIM(imageA, imageB, image_file):
     MEDIA_FOLDER = os.path.normcase(WORKING_DIR + '/images/metrics/ssim/')
     # cv2.imwrite(MEDIA_FOLDER + '/ip/' + image_file, imageA)
     cv2.imwrite(MEDIA_FOLDER + '/op/' + image_file, imageB)
-    # cv2.imwrite(MEDIA_FOLDER + '/diff/' + image_file, diff)
+    cv2.imwrite(MEDIA_FOLDER + '/diff/' + image_file, diff)
     cv2.imwrite(MEDIA_FOLDER + '/thresh/' + image_file, thresh)
 
     return score
@@ -61,13 +61,3 @@ def Histogram(image):
     # plt.plot(hist, color='k')
     # plt.show()
     return flatten(hist)
-
-# image = cv2.imread('55.png')
-# gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-# histogram = cv2.calcHist([gray_image], [0], None, [256], [0, 256])
-# flatten = lambda l: [item for sublist in l for item in sublist]
-# print(max(flatten(histogram)))
-# print(len(histogram))
-# print(flatten(histogram))
-# plt.plot(flatten(histogram))
-# plt.show()
