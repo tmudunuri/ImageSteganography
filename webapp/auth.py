@@ -135,15 +135,18 @@ def gan_run():
             decode_message = 'ERROR : Unable to decode message'
         return render_template('algorithms/gan.html', name=current_user.name, decode_message=decode_message, image_file=image_file)
     elif request.form.get('action') == 'calculate':
-        psnr_val = round(cv2.PSNR(cv2.imread(input_file), cv2.imread(output_file)), 2)
-        ssim_val = round(SSIM(cv2.imread(input_file), cv2.imread(output_file), image_file), 2)
-        mse_val = round(MSE(cv2.imread(input_file), cv2.imread(output_file)), 2)
-        args['psnr'] = psnr_val if psnr_val is not None else 'Error'
-        args['mse'] = mse_val if mse_val is not None else 'Error'
-        args['ssim'] = ssim_val if ssim_val is not None else 'Error'
-        # Histogram
-        original = cv2.imread(input_file)
-        compressed = cv2.imread(output_file)
-        args['histogramCover'] = Histogram(original)
-        args['histogramStego'] = Histogram(compressed)
-        return render_template('algorithms/gan.html', **args)
+        try:
+            psnr_val = round(cv2.PSNR(cv2.imread(input_file), cv2.imread(output_file)), 2)
+            ssim_val = round(SSIM(cv2.imread(input_file), cv2.imread(output_file), image_file), 2)
+            mse_val = round(MSE(cv2.imread(input_file), cv2.imread(output_file)), 2)
+            args['psnr'] = psnr_val if psnr_val is not None else 'Error'
+            args['mse'] = mse_val if mse_val is not None else 'Error'
+            args['ssim'] = ssim_val if ssim_val is not None else 'Error'
+            # Histogram
+            original = cv2.imread(input_file)
+            compressed = cv2.imread(output_file)
+            args['histogramCover'] = Histogram(original)
+            args['histogramStego'] = Histogram(compressed)
+            return render_template('algorithms/gan.html', **args)
+        except:
+            return render_template('algorithms/gan.html', name=current_user.name)
