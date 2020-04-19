@@ -108,7 +108,7 @@
                     {% if image_file %}
                     <!-- Images -->
                     <div class="row">
-                        {% if not decode_message %}
+
                         <div class="col-lg-6">
                             <div class="card shadow mb-4">
                                 <div class="card-header py-3">
@@ -116,12 +116,15 @@
                                 </div>
                                 <img src="{{ url_for('auth.download_file', filename='input/' + image_file) }}"
                                     class="card-img-top" alt="...">
+                                {% if decode_message or secret_message  %}
                                 <div class="card-body">
-                                    <span class="font-weight-lighter">Secret message: </span>No Message
+                                    <span class="font-weight-lighter">Encoded message: </span>{% if decode_message %}
+                                    {{ decode_message }} {% else %} {{ secret_message }}  {% endif %}
                                 </div>
+                                {% endif %}
                             </div>
                         </div>
-                        {% endif %}
+       
     
                         <div class="col-lg-6">
                             <div class="card shadow mb-4">
@@ -130,119 +133,125 @@
                                 </div>
                                 <img src="{{ url_for('auth.download_file', filename='output/' + image_file) }}"
                                     class="card-img-top" alt="...">
+                                {% if decode_message %}
                                 <div class="card-body">
-                                    <span class="font-weight-lighter">Secret message: </span>{% if decode_message %}
-                                    {{ decode_message }} {% endif %}
+                                    <span class="font-weight-lighter">Decoded message: </span>{{ decode_message }}
                                 </div>
+                                {% endif %}
                             </div>
                         </div>
     
                     </div>
                     <!-- End Images -->
                     {% endif %}
-    
-                    {% if psnr and ssim %}
-                    <!-- Stats -->
+
+                    {% if decode_message %}
+                    <!-- Image Stats -->
                     <div class="row">
-                        <!-- PSNR -->
+                        <!-- Dimensions -->
                         <div class="col-xl-3 col-md-6 mb-4">
                             <div class="card border-left-info shadow h-100 py-2">
                                 <div class="card-body">
                                     <div class="row no-gutters align-items-center">
                                         <div class="col mr-2">
-                                            <div class="font-weight-bold text-info text-uppercase mb-1">PSNR
+                                            <div class="font-weight-bold text-info text-uppercase mb-1">Dimensions
                                             </div>
                                             <div class="row no-gutters align-items-center">
                                                 <div class="col-auto">
-                                                    <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">{{ psnr }}
-                                                        dB</div>
+                                                    <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">{{ dimensions }}</div>
                                                 </div>
-                                                <div class="col">
-                                                    <div class="progress progress-sm mr-2">
-                                                        <div class="progress-bar bg-info" role="progressbar"
-                                                            style="width: {{ psnr }}%" aria-valuenow="{{ psnr }}"
-                                                            aria-valuemin="0" aria-valuemax="100"></div>
-                                                    </div>
+                                                <div class="col-auto">
+                                                    <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">{{ pixels }} px
+                                                        </div>
                                                 </div>
                                             </div>
                                         </div>
                                         <div class="col-auto">
-                                            <i class="fas fa-clipboard-list fa-2x text-gray-300"></i>
+                                            <i class="fas fa-picture-o text-gray-300"></i>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <!-- End PSNR -->
+                        <!-- End Dimensions -->
     
-    
-                        <!-- MSE -->
+                        <!-- Pixels -->
                         <div class="col-xl-3 col-md-6 mb-4">
                             <div class="card border-left-info shadow h-100 py-2">
                                 <div class="card-body">
                                     <div class="row no-gutters align-items-center">
                                         <div class="col mr-2">
-                                            <div class="font-weight-bold text-info text-uppercase mb-1">MSE
+                                            <div class="font-weight-bold text-info text-uppercase mb-1">Channels
                                             </div>
                                             <div class="row no-gutters align-items-center">
                                                 <div class="col-auto">
-                                                    <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">{{ mse }}
-                                                    </div>
-                                                </div>
-                                                <div class="col">
-                                                    <div class="progress progress-sm mr-2">
-                                                        <div class="progress-bar bg-info" role="progressbar"
-                                                            style="width: {{ mse }}%" aria-valuenow="{{ mse }}"
-                                                            aria-valuemin="0" aria-valuemax="1"></div>
+                                                    <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">{{ channels }}
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
                                         <div class="col-auto">
-                                            <i class="fas fa-clipboard-list fa-2x text-gray-300"></i>
+                                            <i class="fas fa-picture-o text-gray-300"></i>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <!-- End MSE -->
+                        <!-- End Pixels -->
     
-    
-                        <!-- SSIM -->
+                        <!-- Payload -->
                         <div class="col-xl-3 col-md-6 mb-4">
                             <div class="card border-left-info shadow h-100 py-2">
                                 <div class="card-body">
                                     <div class="row no-gutters align-items-center">
                                         <div class="col mr-2">
-                                            <div class="font-weight-bold text-info text-uppercase mb-1">SSIM
+                                            <div class="font-weight-bold text-info text-uppercase mb-1">Payload
                                             </div>
                                             <div class="row no-gutters align-items-center">
                                                 <div class="col-auto">
-                                                    <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">{{ ssim }}
-                                                    </div>
-                                                </div>
-                                                <div class="col">
-                                                    <div class="progress progress-sm mr-2">
-                                                        <div class="progress-bar bg-info" role="progressbar"
-                                                            style="width: {{ ssim * 100 }}%" aria-valuenow="{{ ssim }}"
-                                                            aria-valuemin="0" aria-valuemax="1"></div>
+                                                    <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">{{ payload }} bits
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
                                         <div class="col-auto">
-                                            <i class="fas fa-clipboard-list fa-2x text-gray-300"></i>
+                                            <i class="fas fa-picture-o text-gray-300"></i>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <!-- End SSIM -->
-    
+                        <!-- End Payload -->
+
+                        <!-- Capacity -->
+                        <div class="col-xl-3 col-md-6 mb-4">
+                            <div class="card border-left-info shadow h-100 py-2">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="font-weight-bold text-info text-uppercase mb-1">Capacity
+                                            </div>
+                                            <div class="row no-gutters align-items-center">
+                                                <div class="col-auto">
+                                                    <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">{{ capacity }} bpp
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-auto">
+                                            <i class="fas fa-picture-o text-gray-300"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- End Capacity -->
     
                     </div>
-                    <!-- End Stats -->
+                    <!-- End Image Stats -->
+                    {% endif %}
 
+                    {% if psnr and ssim %}
                     {% if image_file %}
                     <!-- Images -->
                     <div class="row">
@@ -280,6 +289,106 @@
                     </div>
                     <!-- End Images -->
                     {% endif %}
+                    <!-- Measure Stats -->
+                    <div class="row">
+                        <!-- PSNR -->
+                        <div class="col-xl-4 col-md-6 mb-4">
+                            <div class="card border-left-info shadow h-100 py-2">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="font-weight-bold text-info text-uppercase mb-1">PSNR
+                                            </div>
+                                            <div class="row no-gutters align-items-center">
+                                                <div class="col-auto">
+                                                    <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">{{ psnr }}
+                                                        dB</div>
+                                                </div>
+                                                <div class="col">
+                                                    <div class="progress progress-sm mr-2">
+                                                        <div class="progress-bar bg-info" role="progressbar"
+                                                            style="width: {{ psnr }}%" aria-valuenow="{{ psnr }}"
+                                                            aria-valuemin="0" aria-valuemax="100"></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-auto">
+                                            <i class="fas fa-clipboard-list fa-2x text-gray-300"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- End PSNR -->
+    
+    
+                        <!-- MSE -->
+                        <div class="col-xl-4 col-md-6 mb-4">
+                            <div class="card border-left-info shadow h-100 py-2">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="font-weight-bold text-info text-uppercase mb-1">MSE
+                                            </div>
+                                            <div class="row no-gutters align-items-center">
+                                                <div class="col-auto">
+                                                    <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">{{ mse }}
+                                                    </div>
+                                                </div>
+                                                <div class="col">
+                                                    <div class="progress progress-sm mr-2">
+                                                        <div class="progress-bar bg-info" role="progressbar"
+                                                            style="width: {{ mse }}%" aria-valuenow="{{ mse }}"
+                                                            aria-valuemin="0" aria-valuemax="1"></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-auto">
+                                            <i class="fas fa-clipboard-list fa-2x text-gray-300"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- End MSE -->
+    
+    
+                        <!-- SSIM -->
+                        <div class="col-xl-4 col-md-6 mb-4">
+                            <div class="card border-left-info shadow h-100 py-2">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="font-weight-bold text-info text-uppercase mb-1">SSIM
+                                            </div>
+                                            <div class="row no-gutters align-items-center">
+                                                <div class="col-auto">
+                                                    <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">{{ ssim }}
+                                                    </div>
+                                                </div>
+                                                <div class="col">
+                                                    <div class="progress progress-sm mr-2">
+                                                        <div class="progress-bar bg-info" role="progressbar"
+                                                            style="width: {{ ssim * 100 }}%" aria-valuenow="{{ ssim }}"
+                                                            aria-valuemin="0" aria-valuemax="1"></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-auto">
+                                            <i class="fas fa-clipboard-list fa-2x text-gray-300"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- End SSIM -->
+    
+    
+                    </div>
+                    <!-- End Measure Stats -->
                     {% endif %}
     
                     {% if histogramCover or histogramStego %}

@@ -110,34 +110,42 @@ def gan():
 @auth.route('/gan', methods=['POST'])
 @login_required
 def gan_run():
-    secret_message = request.form.get('secret_message')
-    image_file = request.form.get('image_file')
+    args = {}
+    args['name'] = current_user.name
+    args['secret_message'] = request.form.get('secret_message')
+    args['image_file'] = request.form.get('image_file')
     model = 'dense' if (request.form.get('model') == 'dense') else 'basic'
 
-    input_file = os.path.normcase(MEDIA_FOLDER + 'input/' + image_file)
-    output_file = os.path.normcase(MEDIA_FOLDER + 'output/' + image_file)
+    input_file = os.path.normcase(MEDIA_FOLDER + 'input/' + args['image_file'])
+    output_file = os.path.normcase(MEDIA_FOLDER + 'output/' + args['image_file'])
+
+    height, width, args['channels'] = cv2.imread(output_file).shape
+    args['dimensions'] = (str(height) + ' x ' + str(width))
+    args['pixels'] = (height * width)
 
     steganogan = SteganoGAN.load(model)
 
-    args = {}
-    args['name'] = current_user.name
-    args['image_file'] = image_file
     if request.form.get('action') == 'encode':
         try:
-            steganogan.encode(input_file, output_file, secret_message)
+            steganogan.encode(input_file, output_file, args['secret_message'])
+            args['payload'] = (len(args['secret_message'])* 16)
+            args['capacity'] = round((args['payload'] / args['pixels']),4)
             return render_template('algorithms/gan.html', **args)
         except:
             return render_template('algorithms/gan.html', name=current_user.name)
     elif request.form.get('action') == 'decode':
         try:
-            decode_message = steganogan.decode(output_file)
+            args['decode_message'] = steganogan.decode(output_file)
+            args['payload'] = (len(args['decode_message'])* 16)
+            args['capacity'] = round((args['payload'] / args['pixels']),4)
         except:
-            decode_message = 'ERROR : Unable to decode message'
-        return render_template('algorithms/gan.html', name=current_user.name, decode_message=decode_message, image_file=image_file)
+            args['decode_message'] = 'ERROR : Unable to decode message'
+            args['dimensions'] = args['channels'] = args['pixels'] = args['payload'] =  args['capacity'] = 'Error'
+        return render_template('algorithms/gan.html', **args)
     elif request.form.get('action') == 'calculate':
         try:
             psnr_val = round(cv2.PSNR(cv2.imread(input_file), cv2.imread(output_file)), 2)
-            ssim_val = round(SSIM(cv2.imread(input_file), cv2.imread(output_file), image_file), 2)
+            ssim_val = round(SSIM(cv2.imread(input_file), cv2.imread(output_file), args['image_file']), 2)
             mse_val = round(MSE(cv2.imread(input_file), cv2.imread(output_file)), 2)
             args['psnr'] = psnr_val if psnr_val is not None else 'Error'
             args['mse'] = mse_val if mse_val is not None else 'Error'
