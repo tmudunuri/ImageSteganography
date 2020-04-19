@@ -139,7 +139,7 @@ def gan_run():
             args['payload'] = (len(args['decode_message'])* 16)
             args['capacity'] = round((args['payload'] / args['pixels']),4)
         except:
-            args['decode_message'] = 'ERROR : Unable to decode message'
+            args['decode_message'] = 'ERROR'
             args['dimensions'] = args['channels'] = args['pixels'] = args['payload'] =  args['capacity'] = 'Error'
         return render_template('algorithms/gan.html', **args)
     elif request.form.get('action') == 'calculate':
