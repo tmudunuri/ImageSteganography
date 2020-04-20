@@ -6,6 +6,8 @@ import os
 import numpy as np
 # histogram
 import matplotlib.pyplot as plt
+# lsb
+from PIL import Image
 
 WORKING_DIR = os.path.normcase(os.getcwd())
 
@@ -61,3 +63,20 @@ def Histogram(image):
     # plt.plot(hist, color='k')
     # plt.show()
     return flatten(hist)
+
+def show_lsb(image_path, n, algo):
+    """Shows the n least significant bits of image"""
+    image = Image.open(image_path)
+
+    # Used to set everything but the least significant n bits to 0 when
+    # using bitwise AND on an integer
+    mask = (1 << n) - 1
+
+    color_data = [
+        (255 * ((rgb[0] & mask) + (rgb[1] & mask) + (rgb[2] & mask)) // (3 * mask),) * 3
+        for rgb in image.getdata()
+    ]
+    MEDIA_FOLDER = os.path.normcase(WORKING_DIR + '/images/' + algo + '/metrics/lsb/')
+    image.putdata(color_data)
+    file_name, file_extension = os.path.splitext(image_path)
+    image.save(MEDIA_FOLDER + file_name.split('/')[-1] + file_extension)

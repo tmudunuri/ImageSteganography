@@ -9,7 +9,7 @@ from steganogan import SteganoGAN
 from lsb.lsb import hide_data, recover_data
 # Metrics
 import cv2
-from metrics.metrics import SSIM, MSE, Histogram
+from metrics.metrics import SSIM, MSE, Histogram, show_lsb
 # Misc
 import os
 
@@ -157,6 +157,8 @@ def gan_run():
             compressed = cv2.imread(output_file)
             args['histogramCover'] = Histogram(original)
             args['histogramStego'] = Histogram(compressed)
+            # LSB
+            show_lsb(output_file, 2, 'gan')
             return render_template('algorithms/gan.html', **args)
         except:
             return render_template('algorithms/gan.html', name=current_user.name)
@@ -213,6 +215,8 @@ def lsb_run():
             compressed = cv2.imread(output_file)
             args['histogramCover'] = Histogram(original)
             args['histogramStego'] = Histogram(compressed)
+            # LSB
+            show_lsb(output_file, args['nbits'], 'lsb')
             return render_template('algorithms/lsb.html', **args)
         except:
             return render_template('algorithms/lsb.html', name=current_user.name)

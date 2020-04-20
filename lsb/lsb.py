@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 import os
 import sys
-from time import time
-
 from PIL import Image
 
 from lsb.bit import (
