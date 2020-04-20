@@ -117,7 +117,7 @@ def gan_run():
     model = 'dense' if (request.form.get('model') == 'dense') else 'basic'
 
     input_file = os.path.normcase(MEDIA_FOLDER + 'input/' + args['image_file'])
-    output_file = os.path.normcase(MEDIA_FOLDER + 'output/' + args['image_file'])
+    output_file = os.path.normcase(MEDIA_FOLDER + 'gan/output/' + args['image_file'])
 
     height, width, args['channels'] = cv2.imread(input_file).shape
     args['dimensions'] = (str(height) + ' x ' + str(width))
