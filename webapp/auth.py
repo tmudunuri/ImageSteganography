@@ -158,3 +158,8 @@ def gan_run():
             return render_template('algorithms/gan.html', **args)
         except:
             return render_template('algorithms/gan.html', name=current_user.name)
+
+@auth.route('/lsb')
+@login_required
+def lsb():
+    return render_template('algorithms/lsb.html', name=current_user.name)
