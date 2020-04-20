@@ -118,8 +118,8 @@
                                     class="card-img-top" alt="...">
                                 {% if decode_message or secret_message  %}
                                 <div class="card-body">
-                                    <span class="font-weight-lighter">Encoded message: </span>{% if decode_message %}
-                                    {{ decode_message }} {% else %} {{ secret_message }}  {% endif %}
+                                    <small>Encoded message:<br>{% if decode_message %}
+                                    {{ decode_message }} {% else %} {{ secret_message }}  {% endif %}</small>
                                 </div>
                                 {% endif %}
                             </div>
@@ -135,7 +135,7 @@
                                     class="card-img-top" alt="...">
                                 {% if decode_message %}
                                 <div class="card-body">
-                                    <span class="font-weight-lighter">Decoded message: </span>{{ decode_message }}
+                                    <small>Decoded message:<br>{{ decode_message }}</small>
                                 </div>
                                 {% endif %}
                             </div>
