@@ -145,7 +145,7 @@ def gan_run():
     elif request.form.get('action') == 'calculate':
         try:
             psnr_val = round(cv2.PSNR(cv2.imread(input_file), cv2.imread(output_file)), 2)
-            ssim_val = round(SSIM(cv2.imread(input_file), cv2.imread(output_file), args['image_file']), 2)
+            ssim_val = round(SSIM(cv2.imread(input_file), cv2.imread(output_file), 'gan', args['image_file']), 2)
             mse_val = round(MSE(cv2.imread(input_file), cv2.imread(output_file)), 2)
             args['psnr'] = psnr_val if psnr_val is not None else 'Error'
             args['mse'] = mse_val if mse_val is not None else 'Error'

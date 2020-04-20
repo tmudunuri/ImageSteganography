@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 WORKING_DIR = os.path.normcase(os.getcwd())
 
 
-def SSIM(imageA, imageB, image_file):
+def SSIM(imageA, imageB, algo, image_file):
     # convert the images to grayscale
     grayA = cv2.cvtColor(imageA, cv2.COLOR_BGR2GRAY)
     grayB = cv2.cvtColor(imageB, cv2.COLOR_BGR2GRAY)
@@ -32,11 +32,11 @@ def SSIM(imageA, imageB, image_file):
         cv2.rectangle(imageA, (x, y), (x + w, y + h), (0, 0, 255), 2)
         cv2.rectangle(imageB, (x, y), (x + w, y + h), (0, 0, 255), 2)
 
-    MEDIA_FOLDER = os.path.normcase(WORKING_DIR + '/images/gan/metrics/ssim/')
+    MEDIA_FOLDER = os.path.normcase(WORKING_DIR + '/images/' + algo + '/metrics/ssim/')
     # cv2.imwrite(MEDIA_FOLDER + '/gan/ip/' + image_file, imageA)
-    cv2.imwrite(MEDIA_FOLDER + '/gan/op/' + image_file, imageB)
-    cv2.imwrite(MEDIA_FOLDER + '/gan/diff/' + image_file, diff)
-    cv2.imwrite(MEDIA_FOLDER + '/gan/thresh/' + image_file, thresh)
+    cv2.imwrite(MEDIA_FOLDER + '/op/' + image_file, imageB)
+    cv2.imwrite(MEDIA_FOLDER + '/diff/' + image_file, diff)
+    cv2.imwrite(MEDIA_FOLDER + '/thresh/' + image_file, thresh)
 
     return score
 
