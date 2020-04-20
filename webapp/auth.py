@@ -6,6 +6,7 @@ from webapp.models import User
 from webapp import db
 # Algorithms
 from steganogan import SteganoGAN
+from lsb.lsb import hide_data, recover_data
 # Metrics
 import cv2
 from metrics.metrics import SSIM, MSE, Histogram
@@ -101,9 +102,10 @@ def download_file(filename):
     return send_from_directory(MEDIA_FOLDER, filename, as_attachment=True)
 
 # ============================== Algorithms ==============================
+# GAN 
 @auth.route('/gan')
 @login_required
-def gan():
+def gan_page():
     return render_template('algorithms/gan.html', name=current_user.name)
 
 
@@ -159,7 +161,58 @@ def gan_run():
         except:
             return render_template('algorithms/gan.html', name=current_user.name)
 
+# LSB
 @auth.route('/lsb')
 @login_required
-def lsb():
+def lsb_page():
     return render_template('algorithms/lsb.html', name=current_user.name)
+
+@auth.route('/lsb', methods=['POST'])
+@login_required
+def lsb_run():
+    args = {}
+    args['name'] = current_user.name
+    args['secret_message'] = request.form.get('secret_message')
+    args['image_file'] = request.form.get('image_file')
+    args['nbits'] = int(request.form.get('nbits'))
+
+    input_file = os.path.normcase(MEDIA_FOLDER + 'input/' + args['image_file'])
+    output_file = os.path.normcase(MEDIA_FOLDER + 'lsb/output/' + args['image_file'])
+
+    height, width, args['channels'] = cv2.imread(input_file).shape
+    args['dimensions'] = (str(height) + ' x ' + str(width))
+    args['pixels'] = (height * width)
+
+    if request.form.get('action') == 'encode':
+        try:
+            hide_data(input_file, args['secret_message'], output_file, args['nbits'], 1)
+            args['payload'] = (len(args['secret_message'])* 16)
+            args['capacity'] = round((args['payload'] / args['pixels']),4)
+            return render_template('algorithms/lsb.html', **args)
+        except:
+            return render_template('algorithms/lsb.html', name=current_user.name)
+    elif request.form.get('action') == 'decode':
+        try:
+            args['decode_message'] = recover_data(output_file, args['nbits'])
+            args['payload'] = (len(args['decode_message'])* 16)
+            args['capacity'] = round((args['payload'] / args['pixels']),4)
+        except:
+            args['decode_message'] = 'ERROR'
+            args['dimensions'] = args['channels'] = args['pixels'] = args['payload'] =  args['capacity'] = 'Error'
+        return render_template('algorithms/lsb.html', **args)
+    elif request.form.get('action') == 'calculate':
+        try:
+            psnr_val = round(cv2.PSNR(cv2.imread(input_file), cv2.imread(output_file)), 2)
+            ssim_val = round(SSIM(cv2.imread(input_file), cv2.imread(output_file), 'lsb', args['image_file']), 2)
+            mse_val = round(MSE(cv2.imread(input_file), cv2.imread(output_file)), 2)
+            args['psnr'] = psnr_val if psnr_val is not None else 'Error'
+            args['mse'] = mse_val if mse_val is not None else 'Error'
+            args['ssim'] = ssim_val if ssim_val is not None else 'Error'
+            # Histogram
+            original = cv2.imread(input_file)
+            compressed = cv2.imread(output_file)
+            args['histogramCover'] = Histogram(original)
+            args['histogramStego'] = Histogram(compressed)
+            return render_template('algorithms/lsb.html', **args)
+        except:
+            return render_template('algorithms/lsb.html', name=current_user.name)
