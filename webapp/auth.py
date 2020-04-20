@@ -12,20 +12,11 @@ import cv2
 from metrics.metrics import SSIM, MSE, Histogram, show_lsb
 # Misc
 import os
+import glob
 
 auth = Blueprint('auth', __name__)
 
 # ============================== Authentication ==============================
-@auth.route('/login')
-def login():
-    return render_template('login.html')
-
-
-@auth.route('/signup')
-def signup():
-    return render_template('signup.html')
-
-
 @auth.route('/signup', methods=['POST'])
 def signup_post():
     email = request.form.get('email')
@@ -35,14 +26,14 @@ def signup_post():
 
     if password != password_confirm:
         flash("Passwords don't match.")
-        return redirect(url_for('auth.signup'))
+        return redirect(url_for('main.signup'))
 
     # if this returns a user, then the email already exists in database
     user = User.query.filter_by(email=email).first()
 
     if user:  # if a user is found, we want to redirect back to signup page so user can try again
         flash('Account already exists. You may login.')
-        return redirect(url_for('auth.login'))
+        return redirect(url_for('main.login'))
 
     # create new user with the form data. Hash the password so plaintext version isn't saved.
     new_user = User(email=email, name=name,
@@ -53,7 +44,7 @@ def signup_post():
     db.session.commit()
     flash('Signup successful. You may login with email ' + email)
 
-    return redirect(url_for('auth.login'))
+    return redirect(url_for('main.login'))
 
 
 @auth.route('/login', methods=['POST'])
@@ -69,11 +60,11 @@ def login_post():
     if not user or not check_password_hash(user.password, password):
         flash('Please check your login credentials and try again.')
         # if user doesn't exist or password is wrong, reload the page
-        return redirect(url_for('auth.login'))
+        return redirect(url_for('main.login'))
 
     # if the above check passes, then we know the user has the right credentials
     login_user(user, remember=remember)
-    return redirect(url_for('main.index'))
+    return redirect(url_for('auth.index'))
 
 
 @auth.route('/logout')
@@ -81,7 +72,7 @@ def login_post():
 def logout():
     logout_user()
     flash('You have been successfully logged out.')
-    return redirect(url_for('auth.login'))
+    return redirect(url_for('main.login'))
 
 
 @auth.route('/delete_user')
@@ -91,7 +82,7 @@ def delete_user():
     db.session.delete(user)
     db.session.commit()
     flash('User ' + current_user.email + ' has been deleted.')
-    return redirect(url_for('auth.login'))
+    return redirect(url_for('main.login'))
 
 
 # ============================== Images ==============================
@@ -100,6 +91,32 @@ MEDIA_FOLDER = os.path.normcase(os.getcwd() + '/images/')
 @login_required
 def download_file(filename):
     return send_from_directory(MEDIA_FOLDER, filename, as_attachment=True)
+
+
+# ============================== Dashboard ==============================
+@auth.route('/')
+def index():
+    if current_user.is_authenticated:
+        return render_template('dashboard.html', name=current_user.name)
+    return render_template('index.html')
+
+@auth.route('/dashboard', methods=['POST'])
+@login_required
+def dashboard_run():
+    args = {}
+    args['name'] = current_user.name
+    if request.form.get('action') == 'compare':
+        try:
+            args['image_file'] = request.form.get('image_file')
+        except:
+            args['image_file_error'] = 'ERROR'
+    elif request.form.get('action') == 'clear':
+        fileList = glob.glob(MEDIA_FOLDER + '**/*.png', recursive=True)
+        for file_name in fileList:
+            if 'input' not in file_name:
+                os.remove(file_name)
+    return render_template('dashboard.html', **args)
+
 
 # ============================== Algorithms ==============================
 # GAN 
@@ -158,7 +175,7 @@ def gan_run():
             args['histogramCover'] = Histogram(original)
             args['histogramStego'] = Histogram(compressed)
             # LSB
-            show_lsb(output_file, 2, 'gan')
+            show_lsb(output_file, 1, 'gan')
             return render_template('algorithms/gan.html', **args)
         except:
             return render_template('algorithms/gan.html', name=current_user.name)

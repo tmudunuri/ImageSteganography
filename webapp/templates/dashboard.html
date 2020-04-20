@@ -31,6 +31,67 @@
           <!-- Page Heading -->
           <h1 class="h3 mb-4 text-gray-800">Image Steganography</h1>
 
+          <div class="row">
+
+            <div class="col-lg-12">
+              <div class="card shadow mb-4">
+                <a href="#collapseCompareCard" class="d-block card-header py-3" data-toggle="collapse" role="button"
+                  aria-expanded="true" aria-controls="collapseCompareCard">
+                  <h6 class="m-0 font-weight-bold text-primary">Compare</h6>
+                </a>
+                <div class="collapse show" id="collapseCompareCard">
+                  <div class="card-body">
+                    <form method="POST" action="/dashboard">
+                      <div class="form-group">
+                        <label>Image</label>
+                        <input type="file" accept=".png" class="form-control-file" name="image_file" required>
+                      </div>
+                      <div class="btn-group d-flex">
+                        <button type="submit" name="action" value="clear" class="btn btn-danger">
+                          Clear
+                        </button>
+                        <button type="submit" name="action" value="compare" class="btn btn-info">
+                          Compare
+                        </button>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          {% if image_file %}
+          {%for algo in ('lsb','gan')%}
+          <!-- Images -->
+          <div class="row">
+          
+            <div class="col-lg-5">
+              <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                  <h6 class="m-0 font-weight- text-uppercase text-primary">{{ algo }}</h6>
+                </div>
+                <img src="{{ url_for('auth.download_file', filename= algo + '/metrics/ssim/op/' + image_file) }}" class="card-img-top"
+                  alt="...">
+              </div>
+            </div>
+          
+            <div class="col-lg-5">
+              <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                  <h6 class="m-0 text-info">Last Bit(s)</h6>
+                </div>
+                <img src="{{ url_for('auth.download_file', filename= algo + '/metrics/lsb/' + image_file) }}" class="card-img-top"
+                  alt="...">
+              </div>
+            </div>
+          
+          </div>
+          <!-- End Images -->
+          {%endfor%} 
+          {% endif %}
+
         </div>
         <!-- /.container-fluid -->
 
