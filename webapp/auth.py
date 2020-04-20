@@ -9,6 +9,7 @@ from steganogan import SteganoGAN
 from lsb.lsb import hide_data, recover_data
 # Metrics
 import cv2
+import sys
 from metrics.metrics import SSIM, MSE, Histogram, show_lsb
 # Misc
 import os
@@ -147,15 +148,15 @@ def gan_run():
     if request.form.get('action') == 'encode':
         try:
             steganogan.encode(input_file, output_file, args['secret_message'])
-            args['payload'] = (len(args['secret_message'])* 16)
-            args['capacity'] = round((args['payload'] / args['pixels']),4)
+            args['payload'] = sys.getsizeof(args['secret_message'].encode('utf-16'))* 8
+            args['capacity'] = round((args['payload'] / args['pixels']),6)
             return render_template('algorithms/gan.html', **args)
         except:
             return render_template('algorithms/gan.html', name=current_user.name)
     elif request.form.get('action') == 'decode':
         try:
             args['decode_message'] = steganogan.decode(output_file)
-            args['payload'] = (len(args['decode_message'])* 16)
+            args['payload'] = sys.getsizeof(args['decode_message'].encode('utf-16'))* 8
             args['capacity'] = round((args['payload'] / args['pixels']),4)
         except:
             args['decode_message'] = 'ERROR'
@@ -205,7 +206,7 @@ def lsb_run():
     if request.form.get('action') == 'encode':
         try:
             hide_data(input_file, args['secret_message'], output_file, args['nbits'], 1)
-            args['payload'] = (len(args['secret_message'])* 16)
+            args['payload'] = sys.getsizeof(args['secret_message'].encode('utf-16'))* 8
             args['capacity'] = round((args['payload'] / args['pixels']),4)
             return render_template('algorithms/lsb.html', **args)
         except:
@@ -213,7 +214,7 @@ def lsb_run():
     elif request.form.get('action') == 'decode':
         try:
             args['decode_message'] = recover_data(output_file, args['nbits'])
-            args['payload'] = (len(args['decode_message'])* 16)
+            args['payload'] = sys.getsizeof(args['decode_message'].encode('utf-16')) * 8
             args['capacity'] = round((args['payload'] / args['pixels']),4)
         except:
             args['decode_message'] = 'ERROR'
