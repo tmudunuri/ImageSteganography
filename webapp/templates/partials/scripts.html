@@ -17,7 +17,7 @@
             <div class="modal-body">Are you sure you want to logout?</div>
             <div class="modal-footer">
                 <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
-                <a class="btn btn-primary" href="{{ url_for('auth.logout') }}">Logout</a>
+                <a class="btn btn-primary" href="{{ url_for('logout') }}">Logout</a>
             </div>
         </div>
     </div>
@@ -39,3 +39,7 @@
 
 <!-- Charts -->
 <script src="{{ url_for('static', filename='vendor/chart.js/Chart.min.js') }}"></script>
+
+<!-- AWS Cognito -->
+<script src="{{ url_for('static', filename='vendor/aws/js/amazon-cognito-identity.js') }}"></script>
+<script src="{{ url_for('static', filename='vendor/aws/js/aws-sdk-2.663.0.js') }}"></script>

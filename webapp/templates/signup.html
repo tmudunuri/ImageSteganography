@@ -30,15 +30,12 @@
                 <h1 class="h4 text-gray-900 mb-4">Signup</h1>
               </div>
 
-              {% with messages = get_flashed_messages() %}
-              {% if messages %}
-              <div class="alert alert-danger" role="alert">
-                {{ messages[0] }}
-              </div>
-              {% endif %}
-              {% endwith %}
+              <!-- Flash Alert -->
+                <div class="alert alert-danger" role="alert" id="flashAlert" style="display: none; cursor: wait; margin: 2% 2%;">
+                </div>
+              <!-- End Flash Alert -->
 
-              <form class="user" method="POST" action="/signup">
+              <form class="user" method="POST" id="signup" onsubmit="return false;">
                 <div class="form-group">
                   <input type="text" name="name" class="form-control form-control-user" placeholder="Full Name" required>
                 </div>
@@ -48,15 +45,15 @@
                 <div class="form-group row">
                   <div class="col-sm-6 mb-3 mb-sm-0">
                     <input type="password" name="password" class="form-control form-control-user"
-                      placeholder="Password" minlength="6" required>
+                      placeholder="Password" minlength="8" required>
                   </div>
                   <div class="col-sm-6">
                     <input type="password" name="password_confirm" class="form-control form-control-user"
-                      placeholder="Repeat Password" minlength="6" required>
+                      placeholder="Repeat Password" minlength="8" required>
                   </div>
                 </div>
                 <br>
-                <button type="submit" class="btn btn-primary btn-user btn-block">
+                <button type="submit" onclick="signUp()" class="btn btn-primary btn-user btn-block">
                   Register Account
                 </button>
 
@@ -76,6 +73,7 @@
 
   <!-- Scripts -->
   {% include "partials/scripts.html" %}
+  <script src="{{ url_for('static', filename='js/cognito.js') }}"></script>
   <!-- End of Scripts -->
 </body>
 
