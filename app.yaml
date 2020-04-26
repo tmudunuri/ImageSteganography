@@ -1,0 +1,14 @@
+runtime: python37
+entrypoint: gunicorn -b :$PORT -w 1 "webapp:create_app()"
+instance_class: F1
+automatic_scaling:
+  target_cpu_utilization: 0.95
+  min_instances: 0
+  max_instances: 1
+  min_pending_latency: 300ms
+  max_pending_latency: automatic
+  max_concurrent_requests: 80
+handlers:
+- url: /.*
+  secure: always
+  script: auto
