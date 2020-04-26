@@ -2,20 +2,20 @@
 from flask import Flask, Blueprint, render_template, request, send_from_directory
 from flask_login import login_required, current_user
 # Algorithms
-from steganogan import SteganoGAN
-from lsb.lsb import hide_data, recover_data
+from webapp.algorithms.lsb.lsb import hide_data, recover_data
 # Metrics
 import cv2
 import sys
 from metrics.metrics import SSIM, MSE, Histogram, show_lsb
 # Misc
+from webapp import config
 import os
 import glob
 
 auth = Blueprint('auth', __name__)
 
 # ============================== Images ==============================
-MEDIA_FOLDER = os.path.normcase(os.getcwd() + '/images/')
+MEDIA_FOLDER = os.path.normcase(os.getcwd() + '/webapp/static/images/')
 @auth.route('/images/<path:filename>')
 @login_required
 def download_file(filename):
@@ -58,6 +58,9 @@ def gan_page():
 @auth.route('/gan', methods=['POST'])
 @login_required
 def gan_run():
+    if not config.GAN:
+        return render_template('algorithms/gan.html', name=current_user.name)
+    from steganogan import SteganoGAN
     args = {}
     args['name'] = current_user.name
     args['secret_message'] = request.form.get('secret_message')

@@ -1,6 +1,7 @@
-SECRET_KEY = '9OLWxND4o83j4K4iuopO'
-SQLALCHEMY_DATABASE_URI = 'sqlite:///db.sqlite'
+SECRET_KEY = b'\x17<d\xde\x12[e\xb0\xe4\x8d\x9b\x97\x00\xb1i\x8a'
 SEND_FILE_MAX_AGE_DEFAULT = 0
+TESTING = False
+GAN = False
 
 AWS_DEFAULT_REGION = 'us-east-1'
 AWS_COGNITO_DOMAIN = 'https://stego.auth.us-east-1.amazoncognito.com'

@@ -34,7 +34,7 @@ def SSIM(imageA, imageB, algo, image_file):
         cv2.rectangle(imageA, (x, y), (x + w, y + h), (0, 0, 255), 2)
         cv2.rectangle(imageB, (x, y), (x + w, y + h), (0, 0, 255), 2)
 
-    MEDIA_FOLDER = os.path.normcase(WORKING_DIR + '/images/' + algo + '/metrics/ssim/')
+    MEDIA_FOLDER = os.path.normcase(WORKING_DIR + '/webapp/static/images/' + algo + '/metrics/ssim/')
     # cv2.imwrite(MEDIA_FOLDER + '/gan/ip/' + image_file, imageA)
     cv2.imwrite(MEDIA_FOLDER + '/op/' + image_file, imageB)
     cv2.imwrite(MEDIA_FOLDER + '/diff/' + image_file, diff)
@@ -76,7 +76,7 @@ def show_lsb(image_path, n, algo):
         (255 * ((rgb[0] & mask) + (rgb[1] & mask) + (rgb[2] & mask)) // (3 * mask),) * 3
         for rgb in image.getdata()
     ]
-    MEDIA_FOLDER = os.path.normcase(WORKING_DIR + '/images/' + algo + '/metrics/lsb/')
+    MEDIA_FOLDER = os.path.normcase(WORKING_DIR + '/webapp/static/images/' + algo + '/metrics/lsb/')
     image.putdata(color_data)
     file_name, file_extension = os.path.splitext(image_path)
     image.save(MEDIA_FOLDER + file_name.split('/')[-1] + file_extension)
