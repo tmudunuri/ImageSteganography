@@ -72,10 +72,17 @@ def show_lsb(image_path, n, algo):
     # using bitwise AND on an integer
     mask = (1 << n) - 1
 
-    color_data = [
-        (255 * ((rgb[0] & mask) + (rgb[1] & mask) + (rgb[2] & mask)) // (3 * mask),) * 3
-        for rgb in image.getdata()
-    ]
+    try:
+        color_data = [
+            (255 * ((rgb[0] & mask) + (rgb[1] & mask) + (rgb[2] & mask)) // (3 * mask),) * 3
+            for rgb in image.getdata()
+        ]
+    except:
+        color_data = [
+            (255 * ( (rgb & mask) ) // (1 * mask),) * 1
+            for rgb in image.getdata()
+        ]
+
     MEDIA_FOLDER = os.path.normcase(WORKING_DIR + '/webapp/static/images/' + algo + '/metrics/lsb/')
     image.putdata(color_data)
     file_name, file_extension = os.path.splitext(image_path)

@@ -3,6 +3,7 @@ from flask import Flask, Blueprint, render_template, request, send_from_director
 from flask_login import login_required, current_user
 # Algorithms
 from webapp.algorithms.lsb.lsb import hide_data, recover_data
+from webapp.algorithms.svd.svd import Steganographer
 # Metrics
 import cv2
 import sys
@@ -169,3 +170,62 @@ def lsb_run():
             return render_template('algorithms/lsb.html', **args)
         except:
             return render_template('algorithms/lsb.html', name=current_user.name)
+
+# SVD
+@auth.route('/svd')
+@login_required
+def svd_page():
+    return render_template('algorithms/svd.html', name=current_user.name)
+
+@auth.route('/svd', methods=['POST'])
+@login_required
+def svd_run():
+    args = {}
+    args['name'] = current_user.name
+    args['secret_message'] = request.form.get('secret_message')
+    args['image_file'] = request.form.get('image_file')
+
+    input_file = os.path.normcase(MEDIA_FOLDER + 'input/' + args['image_file'])
+    output_file = os.path.normcase(MEDIA_FOLDER + 'svd/output/' + args['image_file'])
+
+    height, width, args['channels'] = cv2.imread(input_file).shape
+    args['dimensions'] = (str(height) + ' x ' + str(width))
+    args['pixels'] = (height * width)
+
+    if request.form.get('action') == 'encode':
+        try:
+            stego = Steganographer(method='embed', input_file = input_file,output_file = output_file, secret_message = args['secret_message'])
+            args['payload'] = sys.getsizeof(args['secret_message'].encode('utf-16'))* 8
+            args['capacity'] = round((args['payload'] / args['pixels']),4)
+            stego.run()
+            return render_template('algorithms/svd.html', **args)
+        except:
+            return render_template('algorithms/svd.html', name=current_user.name)
+    elif request.form.get('action') == 'decode':
+        try:
+            stego = Steganographer(method='decode', input_file = output_file)
+            args['decode_message'] = stego.decode()
+            args['payload'] = sys.getsizeof(args['decode_message'].encode('utf-16')) * 8
+            args['capacity'] = round((args['payload'] / args['pixels']),4)
+        except:
+            args['decode_message'] = 'ERROR'
+            args['dimensions'] = args['channels'] = args['pixels'] = args['payload'] =  args['capacity'] = 'Error'
+        return render_template('algorithms/svd.html', **args)
+    elif request.form.get('action') == 'calculate':
+        try:
+            psnr_val = round(cv2.PSNR(cv2.imread(input_file), cv2.imread(output_file)), 2)
+            ssim_val = round(SSIM(cv2.imread(input_file), cv2.imread(output_file), 'svd', args['image_file']), 2)
+            mse_val = round(MSE(cv2.imread(input_file), cv2.imread(output_file)), 2)
+            args['psnr'] = psnr_val if psnr_val is not None else 'Error'
+            args['mse'] = mse_val if mse_val is not None else 'Error'
+            args['ssim'] = ssim_val if ssim_val is not None else 'Error'
+            # Histogram
+            original = cv2.imread(input_file)
+            compressed = cv2.imread(output_file)
+            args['histogramCover'] = Histogram(original)
+            args['histogramStego'] = Histogram(compressed)
+            # LSB
+            show_lsb(output_file, 1, 'svd')
+            return render_template('algorithms/svd.html', **args)
+        except:
+            return render_template('algorithms/svd.html', name=current_user.name)
