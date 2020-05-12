@@ -4,6 +4,7 @@ from flask_login import login_required, current_user
 # Algorithms
 from webapp.algorithms.lsb.lsb import hide_data, recover_data
 from webapp.algorithms.svd.svd import Steganographer
+from webapp.algorithms.dct.dct import DCT
 # Metrics
 import cv2
 import sys
@@ -229,3 +230,62 @@ def svd_run():
             return render_template('algorithms/svd.html', **args)
         except:
             return render_template('algorithms/svd.html', name=current_user.name)
+
+# DCT
+@auth.route('/dct')
+@login_required
+def dct_page():
+    return render_template('algorithms/dct.html', name=current_user.name)
+
+@auth.route('/dct', methods=['POST'])
+@login_required
+def dct_run():
+    args = {}
+    args['name'] = current_user.name
+    args['secret_message'] = request.form.get('secret_message')
+    args['image_file'] = request.form.get('image_file')
+
+    input_file = os.path.normcase(MEDIA_FOLDER + 'input/' + args['image_file'])
+    output_file = os.path.normcase(MEDIA_FOLDER + 'dct/output/' + args['image_file'])
+
+    height, width, args['channels'] = cv2.imread(input_file).shape
+    args['dimensions'] = (str(height) + ' x ' + str(width))
+    args['pixels'] = (height * width)
+
+    if request.form.get('action') == 'encode':
+        try:
+            stego = DCT(input_file = input_file)
+            stego.DCTEn(args['secret_message'], output_file)
+            args['payload'] = sys.getsizeof(args['secret_message'].encode('utf-16'))* 8
+            args['capacity'] = round((args['payload'] / args['pixels']),4)
+            return render_template('algorithms/dct.html', **args)
+        except:
+            return render_template('algorithms/dct.html', name=current_user.name)
+    elif request.form.get('action') == 'decode':
+        try:
+            stego = DCT(input_file = output_file)
+            args['decode_message'] = stego.DCTDe()
+            args['payload'] = sys.getsizeof(args['decode_message'].encode('utf-16')) * 8
+            args['capacity'] = round((args['payload'] / args['pixels']),4)
+        except:
+            args['decode_message'] = 'ERROR'
+            args['dimensions'] = args['channels'] = args['pixels'] = args['payload'] =  args['capacity'] = 'Error'
+        return render_template('algorithms/dct.html', **args)
+    elif request.form.get('action') == 'calculate':
+        try:
+            psnr_val = round(cv2.PSNR(cv2.imread(input_file), cv2.imread(output_file)), 2)
+            ssim_val = round(SSIM(cv2.imread(input_file), cv2.imread(output_file), 'dct', args['image_file']), 2)
+            mse_val = round(MSE(cv2.imread(input_file), cv2.imread(output_file)), 2)
+            args['psnr'] = psnr_val if psnr_val is not None else 'Error'
+            args['mse'] = mse_val if mse_val is not None else 'Error'
+            args['ssim'] = ssim_val if ssim_val is not None else 'Error'
+            # Histogram
+            original = cv2.imread(input_file)
+            compressed = cv2.imread(output_file)
+            args['histogramCover'] = Histogram(original)
+            args['histogramStego'] = Histogram(compressed)
+            # LSB
+            show_lsb(output_file, 1, 'dct')
+            return render_template('algorithms/dct.html', **args)
+        except:
+            return render_template('algorithms/dct.html', name=current_user.name)
