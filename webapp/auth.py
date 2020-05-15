@@ -5,6 +5,8 @@ from flask_login import login_required, current_user
 from webapp.algorithms.lsb.lsb import hide_data, recover_data
 from webapp.algorithms.svd.svd import Steganographer
 from webapp.algorithms.dct.dct import DCT
+from webapp.algorithms.pvd.pvdEmbed import pvdEmbed
+from webapp.algorithms.pvd.pvdExtract import pvdExtract
 # Metrics
 import cv2
 import sys
@@ -289,3 +291,63 @@ def dct_run():
             return render_template('algorithms/dct.html', **args)
         except:
             return render_template('algorithms/dct.html', name=current_user.name)
+
+
+# PVD
+@auth.route('/pvd')
+@login_required
+def pvd_page():
+    return render_template('algorithms/pvd.html', name=current_user.name)
+
+@auth.route('/pvd', methods=['POST'])
+@login_required
+def pvd_run():
+    args = {}
+    args['name'] = current_user.name
+    args['secret_message'] = request.form.get('secret_message')
+    args['image_file'] = request.form.get('image_file')
+
+    input_file = os.path.normcase(MEDIA_FOLDER + 'input/' + args['image_file'])
+    output_file = os.path.normcase(MEDIA_FOLDER + 'pvd/output/' + args['image_file'])
+
+    height, width, args['channels'] = cv2.imread(input_file).shape
+    args['dimensions'] = (str(height) + ' x ' + str(width))
+    args['pixels'] = (height * width)
+
+    if request.form.get('action') == 'encode':
+        try:
+            stego = pvdEmbed(input_file = input_file, output_file = output_file, secret = args['secret_message'])
+            stego.embed()
+            args['payload'] = sys.getsizeof(args['secret_message'].encode('utf-16'))* 8
+            args['capacity'] = round((args['payload'] / args['pixels']),4)
+            return render_template('algorithms/pvd.html', **args)
+        except:
+            return render_template('algorithms/pvd.html', name=current_user.name)
+    elif request.form.get('action') == 'decode':
+        try:
+            stego = pvdExtract(output_file = output_file)
+            args['decode_message'] = stego.extract()
+            args['payload'] = sys.getsizeof(args['decode_message'].encode('utf-16')) * 8
+            args['capacity'] = round((args['payload'] / args['pixels']),4)
+        except:
+            args['decode_message'] = 'ERROR'
+            args['dimensions'] = args['channels'] = args['pixels'] = args['payload'] =  args['capacity'] = 'Error'
+        return render_template('algorithms/pvd.html', **args)
+    elif request.form.get('action') == 'calculate':
+        try:
+            psnr_val = round(cv2.PSNR(cv2.imread(input_file), cv2.imread(output_file)), 2)
+            ssim_val = round(SSIM(cv2.imread(input_file), cv2.imread(output_file), 'pvd', args['image_file']), 2)
+            mse_val = round(MSE(cv2.imread(input_file), cv2.imread(output_file)), 2)
+            args['psnr'] = psnr_val if psnr_val is not None else 'Error'
+            args['mse'] = mse_val if mse_val is not None else 'Error'
+            args['ssim'] = ssim_val if ssim_val is not None else 'Error'
+            # Histogram
+            original = cv2.imread(input_file)
+            compressed = cv2.imread(output_file)
+            args['histogramCover'] = Histogram(original)
+            args['histogramStego'] = Histogram(compressed)
+            # LSB
+            show_lsb(output_file, 1, 'pvd')
+            return render_template('algorithms/pvd.html', **args)
+        except:
+            return render_template('algorithms/pvd.html', name=current_user.name)
