@@ -24,7 +24,7 @@ def page_not_found(e):
 
 def runlog(item, msg, algo, model=None):
     try:
-        log = open(os.getcwd() + '/webapp/algorithms/' + algo + '/run.log', "rb")
+        log = open(os.getcwd() + '/webapp/algorithms/' + algo + '/runlog', "rb")
         temp = pickle.load(log)
     except:
         temp = { 'dense' : {}, 'basic' : {} } if algo == 'gan' else {}
@@ -33,12 +33,12 @@ def runlog(item, msg, algo, model=None):
     else:
         temp[item] = msg.encode('utf-32')
     log.close()
-    log = open(os.getcwd() + '/webapp/algorithms/' + algo + '/run.log', "wb")
+    log = open(os.getcwd() + '/webapp/algorithms/' + algo + '/runlog', "wb")
     pickle.dump(temp, log)
     log.close()
 
 def savelog(item, algo, model=None):
-    log = open(os.getcwd() + '/webapp/algorithms/' + algo + '/run.log', "rb")
+    log = open(os.getcwd() + '/webapp/algorithms/' + algo + '/runlog', "rb")
     temp = pickle.load(log)
     log.close()
     if algo == 'gan':
