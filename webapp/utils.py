@@ -3,6 +3,8 @@ from flask_login import UserMixin
 import requests
 from webapp import config
 from jose import jwt
+import pickle
+import os
 
 class User(UserMixin):
     pass
@@ -19,3 +21,26 @@ def verify(token, access_token=None):
 
 def page_not_found(e):
   return render_template('404.html'), 404
+
+def runlog(item, msg, algo, model=None):
+    try:
+        log = open(os.getcwd() + '/webapp/algorithms/' + algo + '/run.log', "rb")
+        temp = pickle.load(log)
+    except:
+        temp = { 'dense' : {}, 'basic' : {} } if algo == 'gan' else {}
+    if algo == 'gan':
+        temp[model][item] = msg.encode('utf-32')
+    else:
+        temp[item] = msg.encode('utf-32')
+    log.close()
+    log = open(os.getcwd() + '/webapp/algorithms/' + algo + '/run.log', "wb")
+    pickle.dump(temp, log)
+    log.close()
+
+def savelog(item, algo, model=None):
+    log = open(os.getcwd() + '/webapp/algorithms/' + algo + '/run.log', "rb")
+    temp = pickle.load(log)
+    log.close()
+    if algo == 'gan':
+        return temp[model][item].decode('utf-32')
+    return temp[item].decode('utf-32')   

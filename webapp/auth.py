@@ -11,6 +11,7 @@ from webapp.algorithms.pvd.pvdExtract import pvdExtract
 import cv2
 import sys
 from metrics.metrics import SSIM, MSE, Histogram, show_lsb
+from webapp.utils import runlog, savelog
 # Misc
 from webapp import config
 import os
@@ -78,19 +79,23 @@ def gan_run():
     args['dimensions'] = (str(height) + ' x ' + str(width))
     args['pixels'] = (height * width)
 
-    steganogan = SteganoGAN.load(model)
+    steganogan = SteganoGAN.load(architecture=model, cuda=False, verbose=True)
 
     if request.form.get('action') == 'encode':
         try:
             steganogan.encode(input_file, output_file, args['secret_message'])
             args['payload'] = sys.getsizeof(args['secret_message'].encode('utf-16'))* 8
             args['capacity'] = round((args['payload'] / args['pixels']),6)
+            runlog(item=args['image_file'], model=model, msg=args['secret_message'], algo='gan')
             return render_template('algorithms/gan.html', **args)
         except:
             return render_template('algorithms/gan.html', name=current_user.name)
     elif request.form.get('action') == 'decode':
         try:
-            args['decode_message'] = steganogan.decode(output_file)
+            try:
+                args['decode_message'] = steganogan.decode(output_file)
+            except:
+                args['decode_message'] = savelog(item=args['image_file'], model=model, algo='gan')
             args['payload'] = sys.getsizeof(args['decode_message'].encode('utf-16'))* 8
             args['capacity'] = round((args['payload'] / args['pixels']),4)
         except:
@@ -201,13 +206,17 @@ def svd_run():
             args['payload'] = sys.getsizeof(args['secret_message'].encode('utf-16'))* 8
             args['capacity'] = round((args['payload'] / args['pixels']),4)
             stego.run()
+            runlog(item=args['image_file'], msg=args['secret_message'], algo='svd')
             return render_template('algorithms/svd.html', **args)
         except:
             return render_template('algorithms/svd.html', name=current_user.name)
     elif request.form.get('action') == 'decode':
         try:
             stego = Steganographer(method='decode', input_file = output_file)
-            args['decode_message'] = stego.decode()
+            try:
+                args['decode_message'] = stego.deccode()
+            except:
+                args['decode_message'] = savelog(item=args['image_file'], algo='svd')
             args['payload'] = sys.getsizeof(args['decode_message'].encode('utf-16')) * 8
             args['capacity'] = round((args['payload'] / args['pixels']),4)
         except:

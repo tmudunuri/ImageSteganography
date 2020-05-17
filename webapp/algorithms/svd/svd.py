@@ -662,10 +662,10 @@ class Steganographer:
                 block = self.embedded_image[block_size*i:block_size*(i+1), j*block_size:block_size*(j+1)]
                 finalMessage += self.decodeBlock(block)
 
-        print("message out in bits:")
-        print()
-        print(finalMessage)
-        print()
+        # print("message out in bits:")
+        # print()
+        # print(finalMessage)
+        # print()
         self.message = self.convert_message_to_string(finalMessage)
         return self.message
 
