@@ -46,6 +46,7 @@ def create_app():
     @app.route("/login")
     def login():
         # http://docs.aws.amazon.com/cognito/latest/developerguide/login-endpoint.html
+        config.AWS_COGNITO_REDIRECT_URL = request.host_url[0:-1]
         session['csrf_state'] = os.urandom(8).hex()
         cognito_login = ("%s/"
                         "login?response_type=code&client_id=%s"
