@@ -93,7 +93,7 @@ def gan_run():
     elif request.form.get('action') == 'decode':
         try:
             try:
-                args['decode_message'] = steganogan.decode(output_file)
+                args['decode_message'] = steganogan.decode(output_file) if config.GAN_DECODE else 0/0
             except:
                 args['decode_message'] = savelog(item=args['image_file'], model=model, algo='gan')
             args['payload'] = sys.getsizeof(args['decode_message'].encode('utf-16'))* 8
