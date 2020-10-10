@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    {% include "partials/head.html" %}
+    <title>PVD | Image Steganography</title>
+</head>
+
+<body id="page-top">
+
+    <!-- Page Wrapper -->
+    <div id="wrapper">
+    
+        <!-- Sidebar -->
+        {% include "partials/sidebar.html" %}
+        <!-- End of Sidebar -->
+    
+        <!-- Content Wrapper -->
+        <div id="content-wrapper" class="d-flex flex-column">
+    
+            <!-- Main Content -->
+            <div id="content">
+    
+                <!-- Topbar -->
+                {% include "partials/topbar.html" %}
+                <!-- End of Topbar -->
+    
+                <!-- Begin Page Content -->
+                <div class="container-fluid">
+    
+                    <!-- Page Heading -->
+                    <h1 class="h3 mb-4 text-gray-800">Pixel Value Differencing</h1>
+    
+                    <!-- Run -->
+                    <div class="row">
+    
+                        <div class="col-lg-6">
+    
+                            <div class="card shadow mb-4">
+                                <a href="#collapsePVDCard" class="d-block card-header py-3" data-toggle="collapse"
+                                    role="button" aria-expanded="true" aria-controls="collapsePVDCard">
+                                    <h6 class="m-0 font-weight-bold text-primary">PVD</h6>
+                                </a>
+                                <div class="collapse show" id="collapsePVDCard">
+                                    <div class="card-body">
+                                        The pixel-value differencing (PVD) scheme uses the difference value between two consecutive pixels in a block to
+                                        determine how many secret bits should be embedded.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+    
+                        <div class="col-lg-6">
+    
+                            <div class="card shadow mb-4">
+                                <a href="#collapseRunCard" class="d-block card-header py-3" data-toggle="collapse"
+                                    role="button" aria-expanded="true" aria-controls="collapseRunCard">
+                                    <h6 class="m-0 font-weight-bold text-primary">Run</h6>
+                                </a>
+                                <div class="collapse show" id="collapseRunCard">
+                                    <div class="card-body">
+                                        <form method="POST" action="/pvd">
+                                            <div class="form-group">
+                                                <textarea class="form-control" name="secret_message"
+                                                    placeholder="Secret Message" rows="3"></textarea>
+                                            </div>
+                                            <div class="form-group">
+                                                <label>Image</label>
+                                                <input type="file" accept=".png" class="form-control-file" name="image_file"
+                                                    required>
+                                            </div>
+
+                                            <div class="btn-group d-flex">
+                                                <button type="submit" name="action" value="encode" class="btn btn-primary"
+                                                    onclick="loadingSpinner();">Encode
+                                                </button>
+                                                <button type="submit" name="action" value="decode" class="btn btn-dark"
+                                                    onclick="loadingSpinner();">Decode
+                                                </button>
+                                                <button type="submit" name="action" value="calculate" class="btn btn-info"
+                                                    onclick="loadingSpinner();">Analyze
+                                                </button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+    
+                    </div>
+                    <!-- End Run -->
+    
+                    <!-- Loading Spinner -->
+                    <div id="loadingSpinner" style="display: none; cursor: wait; margin: 2% 2%;">
+                        <div class="text-center">
+                            <p>Processing...</p>
+                            <div class="spinner-border" role="status"></div>
+                        </div>
+                    </div>
+                    <!-- End Loading Spinner -->
+    
+                    {% if image_file %}
+                    <!-- Images -->
+                    <div class="row">
+
+                        <div class="col-lg-6">
+                            <div class="card shadow mb-4">
+                                <div class="card-header py-3">
+                                    <h6 class="m-0 font-weight-bold text-primary">Input</h6>
+                                </div>
+                                <img src="{{ url_for('auth.download_file', filename='input/' + image_file) }}"
+                                    class="card-img-top" alt="...">
+                                {% if decode_message or secret_message  %}
+                                <div class="card-body">
+                                    <small>Encoded message:<br>{% if decode_message %}
+                                    {{ decode_message }} {% else %} {{ secret_message }}  {% endif %}</small>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+       
+                        <div class="col-lg-6">
+                            <div class="card shadow mb-4">
+                                <div class="card-header py-3">
+                                    <h6 class="m-0 font-weight-bold text-primary">Output</h6>
+                                </div>
+                                <img src="{{ url_for('auth.download_file', filename='pvd/output/' + image_file) }}"
+                                    class="card-img-top" alt="...">
+                                {% if decode_message %}
+                                <div class="card-body">
+                                    <small>Decoded message:<br>{{ decode_message }}</small>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+    
+                    </div>
+                    <!-- End Images -->
+                    {% endif %}
+
+                    {% if decode_message %}
+                    <!-- Image Stats -->
+                    <div class="row">
+                        <!-- Dimensions -->
+                        <div class="col-xl-3 col-md-6 mb-4">
+                            <div class="card border-left-info shadow h-100 py-2">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="font-weight-bold text-info text-uppercase mb-1">Dimensions
+                                            </div>
+                                            <div class="row no-gutters align-items-center">
+                                                <div class="col-auto">
+                                                    <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">{{ dimensions }}</div>
+                                                </div>
+                                                <div class="col-auto">
+                                                    <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">{{ pixels }} px
+                                                        </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-auto">
+                                            <i class="fas fa-picture-o text-gray-300"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- End Dimensions -->
+    
+                        <!-- Pixels -->
+                        <div class="col-xl-3 col-md-6 mb-4">
+                            <div class="card border-left-info shadow h-100 py-2">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="font-weight-bold text-info text-uppercase mb-1">Channels
+                                            </div>
+                                            <div class="row no-gutters align-items-center">
+                                                <div class="col-auto">
+                                                    <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">{{ channels }}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-auto">
+                                            <i class="fas fa-picture-o text-gray-300"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- End Pixels -->
+    
+                        <!-- Payload -->
+                        <div class="col-xl-3 col-md-6 mb-4">
+                            <div class="card border-left-info shadow h-100 py-2">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="font-weight-bold text-info text-uppercase mb-1">Payload
+                                            </div>
+                                            <div class="row no-gutters align-items-center">
+                                                <div class="col-auto">
+                                                    <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">{{ payload }} bits
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-auto">
+                                            <i class="fas fa-picture-o text-gray-300"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- End Payload -->
+
+                        <!-- Capacity -->
+                        <div class="col-xl-3 col-md-6 mb-4">
+                            <div class="card border-left-info shadow h-100 py-2">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="font-weight-bold text-info text-uppercase mb-1">Capacity
+                                            </div>
+                                            <div class="row no-gutters align-items-center">
+                                                <div class="col-auto">
+                                                    <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">{{ capacity }} bpp
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-auto">
+                                            <i class="fas fa-picture-o text-gray-300"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- End Capacity -->
+    
+                    </div>
+                    <!-- End Image Stats -->
+                    {% endif %}
+
+                    {% if psnr and ssim %}
+                    {% if image_file %}
+                    <!-- Images -->
+                    <div class="row">
+
+                        <div class="col-lg-6">
+                            <div class="card shadow mb-4">
+                                <div class="card-header py-3">
+                                    <h6 class="m-0 text-info">Highlight</h6>
+                                </div>
+                                <img src="{{ url_for('auth.download_file', filename='pvd/metrics/ssim/op/' + image_file) }}"
+                                    class="card-img-top" alt="...">
+                            </div>
+                        </div>
+
+                        <div class="col-lg-6">
+                            <div class="card shadow mb-4">
+                                <div class="card-header py-3">
+                                    <h6 class="m-0 text-info">LSB</h6>
+                                </div>
+                                <img src="{{ url_for('auth.download_file', filename='pvd/metrics/lsb/' + image_file) }}"
+                                    class="card-img-top" alt="...">
+                            </div>
+                        </div>
+
+                        <div class="col-lg-6">
+                            <div class="card shadow mb-4">
+                                <div class="card-header py-3">
+                                    <h6 class="m-0 text-info">Difference</h6>
+                                </div>
+                                <img src="{{ url_for('auth.download_file', filename='pvd/metrics/ssim/diff/' + image_file) }}"
+                                    class="card-img-top" alt="...">
+                            </div>
+                        </div>
+    
+                        <div class="col-lg-6">
+                            <div class="card shadow mb-4">
+                                <div class="card-header py-3">
+                                    <h6 class="m-0 text-info">Bimodal Thresholding</h6>
+                                </div>
+                                <img src="{{ url_for('auth.download_file', filename='pvd/metrics/ssim/thresh/' + image_file) }}"
+                                    class="card-img-top" alt="...">
+                            </div>
+                        </div>
+    
+                    </div>
+                    <!-- End Images -->
+                    {% endif %}
+                    <!-- Measure Stats -->
+                    <div class="row">
+                        <!-- PSNR -->
+                        <div class="col-xl-4 col-md-6 mb-4">
+                            <div class="card border-left-info shadow h-100 py-2">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="font-weight-bold text-info text-uppercase mb-1">PSNR
+                                            </div>
+                                            <div class="row no-gutters align-items-center">
+                                                <div class="col-auto">
+                                                    <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">{{ psnr }}
+                                                        dB</div>
+                                                </div>
+                                                <div class="col">
+                                                    <div class="progress progress-sm mr-2">
+                                                        <div class="progress-bar bg-info" role="progressbar"
+                                                            style="width: {{ psnr }}%" aria-valuenow="{{ psnr }}"
+                                                            aria-valuemin="0" aria-valuemax="100"></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-auto">
+                                            <i class="fas fa-clipboard-list fa-2x text-gray-300"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- End PSNR -->
+    
+    
+                        <!-- MSE -->
+                        <div class="col-xl-4 col-md-6 mb-4">
+                            <div class="card border-left-info shadow h-100 py-2">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="font-weight-bold text-info text-uppercase mb-1">MSE
+                                            </div>
+                                            <div class="row no-gutters align-items-center">
+                                                <div class="col-auto">
+                                                    <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">{{ mse }}
+                                                    </div>
+                                                </div>
+                                                <div class="col">
+                                                    <div class="progress progress-sm mr-2">
+                                                        <div class="progress-bar bg-info" role="progressbar"
+                                                            style="width: {{ mse }}%" aria-valuenow="{{ mse }}"
+                                                            aria-valuemin="0" aria-valuemax="1"></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-auto">
+                                            <i class="fas fa-clipboard-list fa-2x text-gray-300"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- End MSE -->
+    
+    
+                        <!-- SSIM -->
+                        <div class="col-xl-4 col-md-6 mb-4">
+                            <div class="card border-left-info shadow h-100 py-2">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="font-weight-bold text-info text-uppercase mb-1">SSIM
+                                            </div>
+                                            <div class="row no-gutters align-items-center">
+                                                <div class="col-auto">
+                                                    <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">{{ ssim }}
+                                                    </div>
+                                                </div>
+                                                <div class="col">
+                                                    <div class="progress progress-sm mr-2">
+                                                        <div class="progress-bar bg-info" role="progressbar"
+                                                            style="width: {{ ssim * 100 }}%" aria-valuenow="{{ ssim }}"
+                                                            aria-valuemin="0" aria-valuemax="1"></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-auto">
+                                            <i class="fas fa-clipboard-list fa-2x text-gray-300"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- End SSIM -->
+    
+    
+                    </div>
+                    <!-- End Measure Stats -->
+                    {% endif %}
+    
+                    {% if histogramCover or histogramStego %}
+                    <!-- Charts -->
+                    <div class="row">
+    
+                        <div class="col-lg-12">
+    
+                            <!-- Histogram -->
+                            <div class="card shadow mb-4">
+                                <div class="card-header py-3">
+                                    <h6 class="m-0 font-weight-bold text-info">Histogram</h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="chart-area">
+                                        <canvas id="histogramCover"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+    
+                        </div>
+    
+                    </div>
+                    <!-- End Charts -->
+                    {% endif %}
+    
+                </div>
+                <!-- /.container-fluid -->
+    
+            </div>
+            <!-- End of Main Content -->
+    
+            {% include "partials/footer.html" %}
+    
+        </div>
+        <!-- End of Content Wrapper -->
+    
+    </div>
+    <!-- End of Page Wrapper -->
+
+    <!-- Scripts -->
+    {% include "partials/scripts.html" %}
+    <!-- End of Scripts -->
+    <script>
+        // Set new default font family and font color to mimic Bootstrap's default styling
+        Chart.defaults.global.defaultFontFamily = 'Nunito', '-apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif';
+        Chart.defaults.global.defaultFontColor = '#858796';
+
+        var config = {
+            type: 'line',
+            data: {
+                labels: [{% for i in range(256) %}
+                            {{ i }},
+                        {% endfor %}],
+                datasets: [
+                {
+                    label: "Stego",
+                    fill: true,
+                    backgroundColor: "rgba(232, 21, 0, 0.7)",
+                    borderColor: "rgba(232, 21, 0, 0.7)",
+                    borderWidth: 1,
+                    pointRadius: 0,
+                    pointBackgroundColor: "rgba(232, 21, 0, 0.9)",
+                    pointBorderColor: "rgba(232, 21, 0, 0.9)",
+                    pointHoverRadius: 1,
+                    pointHoverBackgroundColor: "rgba(232, 21, 0, 0.9)",
+                    pointHoverBorderColor: "rgba(232, 21, 0, 0.9)",
+                    pointHitRadius: 1,
+                    pointBorderWidth: 0,
+                    data: [{% for itemB in histogramStego %}
+                            {{ itemB }},
+                          {% endfor %}],
+                },
+                {
+                    label: "Cover",
+                    fill: true,
+                    backgroundColor: "rgba(0, 97, 242, 0.7",
+                    borderColor: "rgba(0, 97, 242, 0.7",
+                    borderWidth: 1,
+                    pointRadius: 0,
+                    pointHoverRadius: 1,
+                    pointHoverBackgroundColor: "rgba(0, 97, 242, 0.9",
+                    pointHoverBorderColor: "rgba(0, 97, 242, 0.9",
+                    pointHitRadius: 1,
+                    pointBorderWidth: 0,
+                    spanGaps: true,
+                    data: [{% for itemA in histogramCover %}
+                            {{ itemA }},
+                            {% endfor %}],
+                }],
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                layout: {
+                    padding: {
+                        left: 10,
+                        right: 25,
+                        top: 25,
+                        bottom: 10
+                    }
+                },
+                scales: {
+                    xAxes: [{
+                        gridLines: {
+                            display: false,
+                            drawBorder: false
+                        },
+                        ticks: {
+                            maxTicksLimit: 12,
+                        }
+                    }],
+                    yAxes: [{
+                        ticks: {
+                            maxTicksLimit: 14,
+                        },
+                    }],
+                },
+                legend: {
+                    display: true
+                },
+            }
+        }
+
+        // Histogram
+        var ctx = document.getElementById("histogramCover").getContext("2d");
+        var myLineChart = new Chart(ctx, config);
+    </script>
+</body>
+
+</html>

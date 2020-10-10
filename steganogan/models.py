@@ -354,7 +354,7 @@ class SteganoGAN(object):
 
         if architecture and not path:
             model_name = '{}.steg'.format(architecture)
-            pretrained_path = os.path.join(os.path.dirname(__file__), 'pretrained')
+            pretrained_path = os.path.join(os.path.dirname(__file__), 'models')
             path = os.path.join(pretrained_path, model_name)
 
         elif (architecture is None and path is None) or (architecture and path):

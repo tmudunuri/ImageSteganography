@@ -1,0 +1,11 @@
+README.md
+*.pyc
+*.pyo
+*.pyd
+__pycache__
+app.yaml
+stego.code-workspace
+.gitignore
+.vscode/
+.git/
+venv/
