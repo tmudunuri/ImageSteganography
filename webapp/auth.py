@@ -86,16 +86,12 @@ def gan_run():
             steganogan.encode(input_file, output_file, args['secret_message'])
             args['payload'] = sys.getsizeof(args['secret_message'].encode('utf-16'))* 8
             args['capacity'] = round((args['payload'] / args['pixels']),6)
-            runlog(item=args['image_file'], model=model, msg=args['secret_message'], algo='gan')
             return render_template('algorithms/gan.html', **args)
         except:
             return render_template('algorithms/gan.html', name=current_user.name)
     elif request.form.get('action') == 'decode':
         try:
-            try:
-                args['decode_message'] = steganogan.decode(output_file) if config.GAN_DECODE else 0/0
-            except:
-                args['decode_message'] = savelog(item=args['image_file'], model=model, algo='gan')
+            args['decode_message'] = steganogan.decode(output_file) if config.GAN_DECODE else 0/0
             args['payload'] = sys.getsizeof(args['decode_message'].encode('utf-16'))* 8
             args['capacity'] = round((args['payload'] / args['pixels']),4)
         except:
