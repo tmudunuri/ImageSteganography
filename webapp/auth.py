@@ -31,7 +31,7 @@ def download_file(filename):
 @auth.route('/')
 def index():
     if current_user.is_authenticated:
-        return render_template('dashboard.html', name=current_user.name)
+        return render_template('dashboard.html', name=current_user.name, args={})
     return render_template('index.html')
 
 @auth.route('/dashboard', methods=['POST'])
@@ -40,16 +40,28 @@ def dashboard_run():
     args = {}
     args['name'] = current_user.name
     if request.form.get('action') == 'compare':
-        try:
-            args['image_file'] = request.form.get('image_file')
-        except:
-            args['image_file_error'] = 'ERROR'
+        for algo in ['dct', 'svd', 'lsb', 'pvd', 'gan']:
+            args[algo] = {}
+            try:
+                args['image_file'] = request.form.get('image_file')
+                input_file = os.path.normcase(MEDIA_FOLDER + 'input/' + args['image_file'])
+                output_file = os.path.normcase(MEDIA_FOLDER + algo + '/output/' + args['image_file'])
+                psnr_val = round(cv2.PSNR(cv2.imread(input_file), cv2.imread(output_file)), 2)
+                ssim_val = round(SSIM(cv2.imread(input_file), cv2.imread(output_file), algo, args['image_file']), 2)
+                mse_val = round(MSE(cv2.imread(input_file), cv2.imread(output_file)), 2)
+                args[algo]['psnr'] = psnr_val if psnr_val is not None else 'Error'
+                args[algo]['mse'] = mse_val if mse_val is not None else 'Error'
+                args[algo]['ssim'] = ssim_val if ssim_val is not None else 'Error'
+                # LSB
+                show_lsb(output_file, 1, algo)
+            except:
+                args['image_file_error'] = 'ERROR'
     elif request.form.get('action') == 'clear':
         fileList = glob.glob(MEDIA_FOLDER + '**/*.png', recursive=True)
         for file_name in fileList:
             if 'input' not in file_name:
                 os.remove(file_name)
-    return render_template('dashboard.html', **args)
+    return render_template('dashboard.html', args=args, name=current_user.name)
 
 
 # ============================== Algorithms ==============================

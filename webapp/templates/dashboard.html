@@ -62,7 +62,29 @@
 
           </div>
 
-          {% if image_file %}
+          {% if args.image_file %}
+
+          {% set metrics = {} %}
+          {% set temp = metrics.update({'dct_mse': args.dct.mse}) %}
+          {% set temp = metrics.update({'dct_psnr': args.dct.psnr}) %}
+          {% set temp = metrics.update({'dct_ssim': args.dct.ssim}) %}
+
+          {% set temp = metrics.update({'svd_mse': args.svd.mse}) %}
+          {% set temp = metrics.update({'svd_psnr': args.svd.psnr}) %}
+          {% set temp = metrics.update({'svd_ssim': args.svd.ssim}) %}
+
+          {% set temp = metrics.update({'lsb_mse': args.lsb.mse}) %}
+          {% set temp = metrics.update({'lsb_psnr': args.lsb.psnr}) %}
+          {% set temp = metrics.update({'lsb_ssim': args.lsb.ssim}) %}
+
+          {% set temp = metrics.update({'pvd_mse': args.pvd.mse}) %}
+          {% set temp = metrics.update({'pvd_psnr': args.pvd.psnr}) %}
+          {% set temp = metrics.update({'pvd_ssim': args.pvd.ssim}) %}
+
+          {% set temp = metrics.update({'gan_mse': args.gan.mse}) %}
+          {% set temp = metrics.update({'gan_psnr': args.gan.psnr}) %}
+          {% set temp = metrics.update({'gan_ssim': args.gan.ssim}) %}
+
           {%for algo in ('dct', 'svd', 'lsb', 'pvd', 'gan')%}
           <!-- Images -->
           <div class="row">
@@ -72,7 +94,7 @@
                 <div class="card-header py-3">
                   <h6 class="m-0 font-weight- text-uppercase text-primary">{{ algo }}</h6>
                 </div>
-                <img src="{{ url_for('auth.download_file', filename= algo + '/metrics/ssim/op/' + image_file) }}" class="card-img-top"
+                <img src="{{ url_for('auth.download_file', filename= algo + '/metrics/ssim/op/' + args.image_file) }}" class="card-img-top"
                   alt="...">
               </div>
             </div>
@@ -82,11 +104,32 @@
                 <div class="card-header py-3">
                   <h6 class="m-0 text-info">Last Bit(s)</h6>
                 </div>
-                <img src="{{ url_for('auth.download_file', filename= algo + '/metrics/lsb/' + image_file) }}" class="card-img-top"
+                <img src="{{ url_for('auth.download_file', filename= algo + '/metrics/lsb/' + args.image_file) }}" class="card-img-top"
                   alt="...">
               </div>
             </div>
-          
+
+            <div class="col-lg-2">
+  
+              {%for metric in ('mse', 'psnr', 'ssim')%}
+              <div class="row">
+                <div class="card shadow mb-4">
+                  <div class="card-header py-3">
+                    <h6 class="m-0 text-uppercase text-info">{{ metric }}</h6>
+                  </div>
+                  <div class="row align-items-center">
+                    <div class="col-auto">
+                      <div class="h5 m-3 font-weight-bold text-gray-800">{{ metrics[algo + '_' + metric] }}
+                        dB</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              {%endfor%}
+            
+            </div>
+
+
           </div>
           <!-- End Images -->
           {%endfor%} 
