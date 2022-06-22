@@ -32,7 +32,7 @@ scipy==1.1.0
 # torch==1.0.0
 # torchvision==0.2.1
 tqdm==4.28.1
-numpy==1.21.0
+numpy==1.22.0
 #cognito
 certifi==2020.4.5.1
 chardet==3.0.4
