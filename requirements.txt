@@ -34,7 +34,7 @@ scipy==1.1.0
 tqdm==4.28.1
 numpy==1.21.0
 #cognito
-certifi==2020.4.5.1
+certifi==2022.12.7
 chardet==3.0.4
 ecdsa==0.15
 idna==2.9
